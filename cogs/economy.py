@@ -72,9 +72,9 @@ class Economy(commands.Cog):
 
         if game is None:
             embed = discord.Embed(title=":game_die: **Gambling**", description="Spend your money sensibly by doing some gambling!", color=discord.Color.dark_teal())
-            embed.add_field(name=":package: Three Boxes", value=f"Choose a prize from 3 mystery boxes! Costs $`750`\n`{self.bot.prefix}gamble boxes` or `{self.bot.prefix}threeboxes", inline=False)
-            embed.add_field(name=":question: Number Guesser", value=f"Guess the correct number to triple however much you enter\n`{self.bot.prefix}gamble number (amount)` or `{self.bot.prefix}numberguess", inline=False)
-            embed.add_field(name="<:coin:851488568316133376> Coin Flip", value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)` or `{self.bot.prefix}coinflip", inline=False)
+            embed.add_field(name=":package: Three Boxes", value=f"Choose a prize from 3 mystery boxes! Costs $`750`\n`{self.bot.prefix}gamble boxes` or `{self.bot.prefix}threeboxes`", inline=False)
+            embed.add_field(name=":question: Number Guesser", value=f"Guess the correct number to triple however much you enter\n`{self.bot.prefix}gamble number (amount)` or `{self.bot.prefix}numberguess`", inline=False)
+            embed.add_field(name="<:coin:851488568316133376> Coin Flip", value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)` or `{self.bot.prefix}coinflip`", inline=False)
             return await ctx.send(embed=embed)
 
         elif game.replace(" ", "").lower() == "threeboxes" or game.replace(" ", "").lower() == "boxes" or game.replace(" ", "").lower() == "box":
