@@ -60,6 +60,17 @@ class Admin(commands.Cog):
         await ctx.send("Stopping.")
         await self.bot.logout()
 
+    @commands.command()
+    @is_dev()
+    async def listguilds(self, ctx):
+        await ctx.send("\n".join(bot.guilds))
+        return
+
+    @commands.command()
+    @is_dev()
+    async def allusers(self, ctx):
+        await ctx.send(len(bot.users))
+        return
 
     @commands.command(aliases=['li', 'listitems', 'il'])
     @is_dev()

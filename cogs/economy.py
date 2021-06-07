@@ -297,7 +297,7 @@ class Economy(commands.Cog):
     # Number guess
     @commands.command()
     @commands.cooldown(20, 3600, commands.BucketType.user)
-    async def numberguess(self, ctx):
+    async def numberguess(self, ctx, amount):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
             return await ctx.send(
