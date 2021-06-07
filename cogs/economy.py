@@ -142,8 +142,8 @@ class Economy(commands.Cog):
             except Exception:
                 return await ctx.send("Enter a valid amount.")
 
-            if amount > 10000:
-                return await ctx.send("The limit it $`10000`")
+            if amount > 2500:
+                return await ctx.send("The limit it $`2500`")
 
             if amount > balance:
                 return await ctx.send(f"Insufficient funds!")
@@ -180,7 +180,7 @@ class Economy(commands.Cog):
                     break
 
             if win:
-                balance += int(amount * 3)
+                balance += int(amount * 1.3)
                 embed = discord.Embed(title=":question: Number Guesser", description=f"**Correct!** Your earned $`{int(amount * 3)}`", color=discord.Color.dark_teal())
             else:
                 balance -= amount
@@ -311,8 +311,8 @@ class Economy(commands.Cog):
         except Exception:
             return await ctx.send("Enter a valid amount.")
 
-        if amount > 10000:
-            return await ctx.send("The limit it $`10000`")
+        if amount > 2500:
+            return await ctx.send("The limit it $`2500`")
 
         if amount > balance:
             return await ctx.send(f"Insufficient funds!")
@@ -351,7 +351,7 @@ class Economy(commands.Cog):
                 break
 
         if win:
-            balance += int(amount * 1.5)
+            balance += int(amount * 1.3)
             embed = discord.Embed(title=":question: Number Guesser",
                                   description=f"**Correct!** Your earned $`{int(amount * 3)}`",
                                   color=discord.Color.dark_teal())
