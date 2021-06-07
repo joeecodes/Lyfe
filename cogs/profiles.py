@@ -2,17 +2,21 @@ import discord, platform, logging, random, os, time, asyncio
 from discord.ext import commands
 import platform
 from pathlib import Path
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
 from tabulate import tabulate
+
 
 def is_dev():
     def predictate(ctx):
         devs = utils.json.read_json("devs")
         if ctx.author.id in devs:
             return ctx.author.id
+
     return commands.check(predictate)
+
 
 class Profiles(commands.Cog):
 
@@ -30,6 +34,8 @@ class Profiles(commands.Cog):
             return await ctx.send("You haven't initialized your inventory yet.")
         titles = data["titles"]
         if arg is None:
+            if titles is None:
+                return await ctx.send("You have no titles.")
             message = []
             n = '\n'
             for i in titles:
@@ -107,7 +113,6 @@ class Profiles(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}addtitle (user) (title)`")
 
-
     @commands.command()
     @is_dev()
     async def removetitle(self, ctx, user, title):
@@ -152,7 +157,6 @@ class Profiles(commands.Cog):
     async def removetitle_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}removetitle (user) (title)`")
-
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -238,6 +242,7 @@ class Profiles(commands.Cog):
         embed = discord.Embed(title=title, description=n.join(description), color=color)
         embed.set_thumbnail(url=user.avatar_url)
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Profiles(bot))
