@@ -148,7 +148,7 @@ class Inventory(commands.Cog):
                 await self.bot.cooldowns.upsert({"_id": ctx.author.id, "claim": datetime.now()})
             else:
                 difference = datetime.now() - cooldowns["claim"]
-                retry_after = 86400 - difference.total_seconds()
+                retry_after = 3600 - difference.total_seconds()
                 m, s = divmod(retry_after, 60)
                 h, m = divmod(m, 60)
                 if int(h) == 0 and int(m) == 0:

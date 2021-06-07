@@ -32,7 +32,7 @@ class Help(commands.Cog):
             embed.set_footer(text="Inventory command list")
             embed.add_field(name=f"`{self.bot.prefix}inv [page]/[user] [page]`", value="Open your inventory", inline=False)
             embed.add_field(name=f"`{self.bot.prefix}claim`", value="Claim your hourly reward", inline=False)
-            embed.add_field(name=f"`{self.bot.prefix}claim`", value="Claim your daily reward", inline=False)
+            embed.add_field(name=f"`{self.bot.prefix}daily`", value="Claim your daily reward", inline=False)
             embed.add_field(name=f"`{self.bot.prefix}lock (item)`", value="Prevent an item from being traded or stolen, requires :lock: Lock", inline=False)
             embed.add_field(name=f"`{self.bot.prefix}unlock (item)`", value="Allow an item to be traded or stolen, requires :key: Key", inline=False)
             return await ctx.send(embed=embed)
