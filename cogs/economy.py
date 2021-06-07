@@ -1243,10 +1243,10 @@ class Economy(commands.Cog):
 
         else:
             entries = [
-                ["Small Bank Slot", "${:,}".format(price["small"]), "${:,}".format(stores["small"]), f"{self.bot.prefix}bank small bank slot"],
-                ["Medium Bank Slot", "${:,}".format(price["medium"]), "${:,}".format(stores["medium"]), f"{self.bot.prefix}bank medium bank slot"],
-                ["Large Bank Slot", "${:,}".format(price["large"]), "${:,}".format(stores["large"]), f"{self.bot.prefix}bank large bank slot"],
-                ["Massive Bank Slot", "${:,}".format(price["massive"]), "${:,}".format(stores["massive"]), f"{self.bot.prefix}bank massive bank slot"]
+                ["Small Bank Slot", "${:,}".format(price["small"]), "${:,}".format(stores["small"]), f"{self.bot.prefix}bank smallbank"],
+                ["Medium Bank Slot", "${:,}".format(price["medium"]), "${:,}".format(stores["medium"]), f"{self.bot.prefix}bank mediumbank"],
+                ["Large Bank Slot", "${:,}".format(price["large"]), "${:,}".format(stores["large"]), f"{self.bot.prefix}bank largebank"],
+                ["Massive Bank Slot", "${:,}".format(price["massive"]), "${:,}".format(stores["massive"]), f"{self.bot.prefix}bank massivebank"]
             ]
 
             output = ("Protect your money from thieves\n```" + tabulate(entries, tablefmt="simple", headers=["Item", "Cost", "Stores", "Command"]) + "```")
