@@ -63,13 +63,16 @@ class Admin(commands.Cog):
     @commands.command()
     @is_dev()
     async def listguilds(self, ctx):
-        await ctx.send("\n".join(self.bot.guilds))
+        messages = []
+        for guild in self.bot.guilds:
+            messages.append(f"{guild.name}")
+        await ctx.send("\n".join(messages))
         return
 
     @commands.command()
     @is_dev()
     async def allusers(self, ctx):
-        await ctx.send(len(self.bot.users))
+        await ctx.send("This bot has " + len(self.bot.users) + " users using it.")
         return
 
     @commands.command(aliases=['li', 'listitems', 'il'])
