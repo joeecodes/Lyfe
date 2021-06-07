@@ -36,12 +36,13 @@ class Profiles(commands.Cog):
         if arg is None:
             if titles is None:
                 return await ctx.send("You have no titles.")
-            message = []
-            n = '\n'
-            for i in titles:
-                message.append(i)
-            embed = discord.Embed(title=f"**{ctx.author.name}**'s titles:", description=n.join(message))
-            await ctx.send(embed=embed)
+            else:
+                message = []
+                n = '\n'
+                for i in titles:
+                    message.append(i)
+                embed = discord.Embed(title=f"**{ctx.author.name}**'s titles:", description=n.join(message))
+                await ctx.send(embed=embed)
 
         elif arg.lower() == "set":
             if title is None:
