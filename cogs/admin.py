@@ -72,7 +72,8 @@ class Admin(commands.Cog):
     @commands.command()
     @is_dev()
     async def allusers(self, ctx):
-        await ctx.send("This bot has " + len(self.bot.users) + " users using it.")
+        await ctx.send("There are this many users using the bot:")
+        await ctx.send(len(self.bot.users))
         return
 
     @commands.command(aliases=['li', 'listitems', 'il'])
