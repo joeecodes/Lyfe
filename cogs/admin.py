@@ -63,13 +63,13 @@ class Admin(commands.Cog):
     @commands.command()
     @is_dev()
     async def listguilds(self, ctx):
-        await ctx.send("\n".join(bot.guilds))
+        await ctx.send("\n".join(self.bot.guilds))
         return
 
     @commands.command()
     @is_dev()
     async def allusers(self, ctx):
-        await ctx.send(len(bot.users))
+        await ctx.send(len(self.bot.users))
         return
 
     @commands.command(aliases=['li', 'listitems', 'il'])
