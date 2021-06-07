@@ -14,7 +14,9 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
+        channel = self.bot.get_channel(851519954460213259)
         print(f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await channel.send(f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
         await self.bot.change_presence(activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
         general = find(lambda x: x.name == 'general',  guild.text_channels)
         if general and general.permissions_for(guild.me).send_messages:
@@ -28,7 +30,9 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
+        channel = self.bot.get_channel(851519954460213259)
         print(f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await channel.send(f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
         await self.bot.change_presence(activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
 
     @commands.Cog.listener()
