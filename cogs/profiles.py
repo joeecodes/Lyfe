@@ -46,7 +46,7 @@ class Profiles(commands.Cog):
 
         elif arg.lower() == "set":
             if title is None:
-                return await ctx.send("no title spec.")
+                return await ctx.send(f"You did not specify a title.\n`{self.bot.prefix}title set (title)")
             index = 0
             found = False
 
@@ -67,7 +67,7 @@ class Profiles(commands.Cog):
                     found = True
 
             if not found:
-                return await ctx.send("not found")
+                return await ctx.send("That title could not be found")
 
             titles[index], titles[0] = titles[0], titles[index]
             await ctx.send(f"Title set to {titles[0]}")
