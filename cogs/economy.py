@@ -74,7 +74,7 @@ class Economy(commands.Cog):
             embed = discord.Embed(title=":game_die: **Gambling**", description="Spend your money sensibly by doing some gambling!", color=discord.Color.dark_teal())
             embed.add_field(name=":package: Three Boxes", value=f"Choose a prize from 3 mystery boxes! Costs $`750`\n`{self.bot.prefix}gamble boxes`", inline=False)
             embed.add_field(name=":question: Number Guesser", value=f"Guess the correct number to triple however much you enter\n`{self.bot.prefix}gamble number (amount)`", inline=False)
-            embed.add_field(name="<:coin:733930163817152565> Coin Flip", value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)`", inline=False)
+            embed.add_field(name="<:coin:851488568316133376> Coin Flip", value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)`", inline=False)
             return await ctx.send(embed=embed)
 
         elif game.replace(" ", "").lower() == "threeboxes" or game.replace(" ", "").lower() == "boxes" or game.replace(" ", "").lower() == "box":
@@ -205,17 +205,17 @@ class Economy(commands.Cog):
 
             balance - amount
 
-            embed = discord.Embed(title=f"<:coin:733930163817152565> You have bet $`{int(amount)}`", description=f"Flipping coin <a:loading:733746914109161542>", color=discord.Color.dark_teal())
+            embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Flipping coin <a:loading:851488071567933440>", color=discord.Color.dark_teal())
             message = await ctx.send(embed=embed)
             await asyncio.sleep(2)
             coin = ['heads', 'tails']
             coin = random.choice(coin)
             if coin == 'heads':
                 balance += amount
-                embed = discord.Embed(title=f"<:coin:733930163817152565> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **heads**, you win! You gained $`{amount}`", color=discord.Color.dark_teal())
+                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **heads**, you win! You gained $`{amount}`", color=discord.Color.dark_teal())
             else:
                 balance -= amount
-                embed = discord.Embed(title=f"<:coin:733930163817152565> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **tails**, you lose! You lost $`{amount}`", color=discord.Color.dark_teal())
+                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **tails**, you lose! You lost $`{amount}`", color=discord.Color.dark_teal())
             await message.edit(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
 

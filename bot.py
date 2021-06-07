@@ -64,7 +64,7 @@ async def on_message(message):
         ctx = await bot.get_context(message)
         if ctx.valid:
             if message.content.lower().find("invite") != -1:
-                embed = discord.Embed(title=":herb: Lyfé Invite Links", description=":mailbox_with_mail: [Invite me to other servers](https://discord.com/api/oauth2/authorize?client_id=730874220078170122&permissions=519232&scope=bot)\n<:discord:733776804904697886> [Lyfé Server](https://discord.gg/q5AYJMjqRa)", color=discord.Color.purple())
+                embed = discord.Embed(title=":herb: Lyfé Invite Links", description=":mailbox_with_mail: [Invite me to other servers](https://discord.com/api/oauth2/authorize?client_id=730874220078170122&permissions=519232&scope=bot)\n<:discord:851488059975663706> [Lyfé Server](https://discord.gg/q5AYJMjqRa)", color=discord.Color.purple())
                 return await ctx.send(embed=embed)
             else:
                 lockdownembed = discord.Embed(
