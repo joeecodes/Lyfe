@@ -125,7 +125,7 @@ class Leaderboards(commands.Cog):
     async def frogtop_error(self, ctx, error):
         self.bot.errors += 1
         self.bot.important_errors += 1
-        embed = discord.Emebd(title=":x: Leaderboard Error", description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/zAZ3vKJ).")
+        embed = discord.Emebd(title=":x: Leaderboard Error", description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/S9jPGSJt8D).")
         await ctx.send(embed=embed)
 
 def setup(bot):

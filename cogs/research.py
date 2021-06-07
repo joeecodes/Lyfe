@@ -45,6 +45,8 @@ class Research(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def find(self, ctx, *, item):
+        if item == "frog" or item == "Frog":
+            return await ctx.send("Searching for frogs is currently unavailable at the moment.")
         data = await self.bot.inventories.get_all()
         first, second, third, fourth, fifth = {}, {}, {}, {}, {}
         all = {}

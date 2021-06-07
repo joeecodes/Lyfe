@@ -239,7 +239,7 @@ class Admin(commands.Cog):
         items = await self.bot.items.find("items")
         items = items["items"]
         data = []
-        message = await ctx.send(f"Resetting **{user.name}'s** data... <a:loading:733746914109161542>")
+        message = await ctx.send(f"Resetting **{user.name}'s** data... <a:loading:851488071567933440>")
         item = items["shoppingcart"]
         del item["emoji"], item["value"], item["description"], item["rarity"]
         item["locked"] = False
