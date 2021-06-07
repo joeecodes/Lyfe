@@ -367,7 +367,7 @@ class Economy(commands.Cog):
     # Coinflip
     @commands.command(aliases=["cf"])
     @commands.cooldown(20, 3600, commands.BucketType.user)
-    async def coinflip(self, ctx):
+    async def coinflip(self, ctx, amount):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
             return await ctx.send(
