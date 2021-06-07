@@ -50,6 +50,7 @@ async def on_ready():
     bot.trades = Document(bot.db, "trades")
     bot.playershops = Document(bot.db, "playershops")
     bot.cooldowns = Document(bot.db, "cooldowns")
+    bot.command_usage = Document(bot.db, "command_usage")
     print("Initialized database\n-----")
 
 @bot.event
