@@ -351,7 +351,7 @@ class Economy(commands.Cog):
                 break
 
         if win:
-            balance += int(amount * 3)
+            balance += int(amount * 1.5)
             embed = discord.Embed(title=":question: Number Guesser",
                                   description=f"**Correct!** Your earned $`{int(amount * 3)}`",
                                   color=discord.Color.dark_teal())
