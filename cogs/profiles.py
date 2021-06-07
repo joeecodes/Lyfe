@@ -58,6 +58,8 @@ class Profiles(commands.Cog):
                 title = "✪ Beta Player"
             elif "famous" in title:
                 title = "✪ Famous"
+            elif "frog" in title:
+                title = "✪ Ribbit"
             else:
                 return await ctx.send("Not a valid title.")
 
@@ -103,6 +105,8 @@ class Profiles(commands.Cog):
             titles.append("✪ Beta Player")
         elif "famous" in title:
             titles.append("✪ Famous")
+        elif "frog" in title:
+            titles.append("✪ Ribbit")
         else:
             return await ctx.send("Not a valid title.")
 
@@ -144,6 +148,8 @@ class Profiles(commands.Cog):
             title = "✪ Beta Player"
         elif "famous" in title:
             titles.append("✪ Famous")
+        elif "frog" in title:
+            titles.append("✪ Ribbit")
         else:
             return await ctx.send("Not a valid title.")
 
