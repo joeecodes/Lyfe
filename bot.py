@@ -50,6 +50,7 @@ async def on_ready():
     bot.trades = Document(bot.db, "trades")
     bot.playershops = Document(bot.db, "playershops")
     bot.cooldowns = Document(bot.db, "cooldowns")
+    bot.welcomeback = Document(bot.db, "welcomemessage")
     bot.command_usage = Document(bot.db, "command_usage")
     print("Initialized database\n-----")
 
@@ -58,6 +59,22 @@ async def on_message(message):
     # Ignore bots
     if message.author.id == bot.user.id or message.author.bot:
         return
+
+    ctx = await bot.get_context(message)
+    if ctx.valid and not bot.lockdown:
+        guild = ctx.message.guild.id
+        data = await bot.welcomeback.find(guild)
+        if data is None:
+            welcomeback = discord.Embed(
+                title="Lyfe is returning!",
+                description=f"After quite a long time of inactivity, Lyfe is returning.\nPlease join our support server by doing `{bot.prefix}invite` for more info.\n**Please note, some commands may be buggy or certain features may not be available at the current time!",
+                color=discord.Color.green()
+            )
+            welcomeback.set_thumbnail(url=bot.user.avatar_url)
+            await bot.welcomeback.upsert({"_id": ctx.message.guild.id})
+            await ctx.send(embed=welcomeback)
+        else:
+            pass
 
     # Lockdown system
     if bot.lockdown and message.author.id not in json.load(open(cwd+"/bot_config/devs.json")):
