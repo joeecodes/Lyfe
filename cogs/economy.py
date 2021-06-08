@@ -1,12 +1,14 @@
-import discord, platform, logging, random, os, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import asyncio
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
 from tabulate import tabulate
-from datetime import datetime
+
 
 class Economy(commands.Cog):
 
@@ -39,7 +41,8 @@ class Economy(commands.Cog):
             if user != ctx.author:
                 return await ctx.send("This user hasn't initialized their inventory yet.")
             else:
-                return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+                return await ctx.send(
+                    f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         balance = data["balance"]
         bankbalance = data["bankbalance"]
@@ -51,19 +54,20 @@ class Economy(commands.Cog):
             a = "your"
 
         embed = discord.Embed(
-                title=":moneybag: **Balance**",
-                description=":dollar: **{}**'s balance is $`{:,}`\n:bank: $`{:,}`/`{:,}` is stored in {} bank".format(user.name, balance, bankbalance, banklimit, a),
-                color=color
-            )
+            title=":moneybag: **Balance**",
+            description=":dollar: **{}**'s balance is $`{:,}`\n:bank: $`{:,}`/`{:,}` is stored in {} bank".format(
+                user.name, balance, bankbalance, banklimit, a),
+            color=color
+        )
         return await ctx.send(embed=embed)
-
 
     @commands.command(aliases=['gambling'])
     @commands.cooldown(20, 3600, commands.BucketType.user)
     async def gamble(self, ctx, game=None, amount="n"):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         inventory = data["inventory"]
         balance = data["balance"]
@@ -71,13 +75,22 @@ class Economy(commands.Cog):
         items = items["items"]
 
         if game is None:
-            embed = discord.Embed(title=":game_die: **Gambling**", description="Spend your money sensibly by doing some gambling!", color=discord.Color.dark_teal())
-            embed.add_field(name=":package: Three Boxes", value=f"Choose a prize from 3 mystery boxes! Costs $`750`\n`{self.bot.prefix}gamble boxes` or `{self.bot.prefix}threeboxes", inline=False)
-            embed.add_field(name=":question: Number Guesser", value=f"Guess the correct number to triple however much you enter\n`{self.bot.prefix}gamble number (amount)` or `{self.bot.prefix}numberguess", inline=False)
-            embed.add_field(name="<:coin:851488568316133376> Coin Flip", value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)` or `{self.bot.prefix}coinflip", inline=False)
+            embed = discord.Embed(title=":game_die: **Gambling**",
+                                  description="Spend your money sensibly by doing some gambling!",
+                                  color=discord.Color.dark_teal())
+            embed.add_field(name=":package: Three Boxes",
+                            value=f"Choose a prize from 3 mystery boxes! Costs $`750`\n`{self.bot.prefix}gamble boxes` or `{self.bot.prefix}threeboxes`",
+                            inline=False)
+            embed.add_field(name=":question: Number Guesser",
+                            value=f"Guess the correct number to triple however much you enter\n`{self.bot.prefix}gamble number (amount)` or `{self.bot.prefix}numberguess`",
+                            inline=False)
+            embed.add_field(name="<:coin:851488568316133376> Coin Flip",
+                            value=f"50% chance of doubling your money, 50% chance of losing double! You win on heads\n`{self.bot.prefix}gamble coinflip (amount)` or `{self.bot.prefix}coinflip`",
+                            inline=False)
             return await ctx.send(embed=embed)
 
-        elif game.replace(" ", "").lower() == "threeboxes" or game.replace(" ", "").lower() == "boxes" or game.replace(" ", "").lower() == "box":
+        elif game.replace(" ", "").lower() == "threeboxes" or game.replace(" ", "").lower() == "boxes" or game.replace(
+                " ", "").lower() == "box":
             if balance < 750:
                 return await ctx.send("Insufficient funds.")
             balance -= 750
@@ -87,6 +100,7 @@ class Economy(commands.Cog):
 
             def check(m):
                 return m.channel == ctx.channel and m.author == ctx.author
+
             numbers = ['1', '2', '3']
             while True:
                 try:
@@ -98,7 +112,6 @@ class Economy(commands.Cog):
                     break
                 else:
                     await ctx.send("Please enter 1, 2 or 3.")
-
 
             randomrarity = random.randint(1, 100)
             if 0 < randomrarity <= 60:
@@ -128,7 +141,8 @@ class Economy(commands.Cog):
                 item["quantity"] = 1
                 inventory.append(item)
 
-            embed = discord.Embed(title=":package: **Three Boxes**", description=f"You got **{emoji} {name}**!", color=discord.Color.dark_teal())
+            embed = discord.Embed(title=":package: **Three Boxes**", description=f"You got **{emoji} {name}**!",
+                                  color=discord.Color.dark_teal())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
@@ -142,8 +156,8 @@ class Economy(commands.Cog):
             except Exception:
                 return await ctx.send("Enter a valid amount.")
 
-            if amount > 10000:
-                return await ctx.send("The limit it $`10000`")
+            if amount > 2500:
+                return await ctx.send("The limit it $`2500`")
 
             if amount > balance:
                 return await ctx.send(f"Insufficient funds!")
@@ -157,9 +171,11 @@ class Economy(commands.Cog):
             for i in range(3):
                 while True:
                     if i == 0:
-                        embed = discord.Embed(title=":question: Number Guesser (1 to 10)", description=f"You have 3 guesses!", color=discord.Color.dark_teal())
+                        embed = discord.Embed(title=":question: Number Guesser (1 to 10)",
+                                              description=f"You have 3 guesses!", color=discord.Color.dark_teal())
                     else:
-                        embed = discord.Embed(title=":question: Incorrect!", description=f"{3 - i} guesses remaining!", color=discord.Color.dark_teal())
+                        embed = discord.Embed(title=":question: Incorrect!", description=f"{3 - i} guesses remaining!",
+                                              color=discord.Color.dark_teal())
                     await ctx.send(embed=embed)
                     try:
                         message = await self.bot.wait_for('message', check=check, timeout=10)
@@ -180,16 +196,21 @@ class Economy(commands.Cog):
                     break
 
             if win:
-                balance += int(amount * 3)
-                embed = discord.Embed(title=":question: Number Guesser", description=f"**Correct!** Your earned $`{int(amount * 3)}`", color=discord.Color.dark_teal())
+                balance += int(amount * 1.3)
+                embed = discord.Embed(title=":question: Number Guesser",
+                                      description=f"**Correct!** Your earned $`{int(amount * 3)}`",
+                                      color=discord.Color.dark_teal())
             else:
                 balance -= amount
-                embed = discord.Embed(title=":question: Number Guesser", description=f"**Incorrect!** The number was `{num}`. Your lost $`{amount}`", color=discord.Color.dark_teal())
+                embed = discord.Embed(title=":question: Number Guesser",
+                                      description=f"**Incorrect!** The number was `{num}`. Your lost $`{amount}`",
+                                      color=discord.Color.dark_teal())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
 
 
-        elif game.replace(" ", "").lower() == "coinflip" or game.replace(" ", "").lower() == "coin" or game.replace(" ", "").lower() == "flip":
+        elif game.replace(" ", "").lower() == "coinflip" or game.replace(" ", "").lower() == "coin" or game.replace(" ",
+                                                                                                                    "").lower() == "flip":
             try:
                 amount = int(amount)
                 if amount <= 0:
@@ -205,20 +226,25 @@ class Economy(commands.Cog):
 
             balance - amount
 
-            embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Flipping coin <a:loading:851488071567933440>", color=discord.Color.dark_teal())
+            embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`",
+                                  description=f"Flipping coin <a:loading:851488071567933440>",
+                                  color=discord.Color.dark_teal())
             message = await ctx.send(embed=embed)
             await asyncio.sleep(2)
             coin = ['heads', 'tails']
             coin = random.choice(coin)
             if coin == 'heads':
                 balance += amount
-                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **heads**, you win! You gained $`{amount}`", color=discord.Color.dark_teal())
+                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`",
+                                      description=f"Coin has been flipped! It's **heads**, you win! You gained $`{amount}`",
+                                      color=discord.Color.dark_teal())
             else:
                 balance -= amount
-                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`", description=f"Coin has been flipped! It's **tails**, you lose! You lost $`{amount}`", color=discord.Color.dark_teal())
+                embed = discord.Embed(title=f"<:coin:851488568316133376> You have bet $`{int(amount)}`",
+                                      description=f"Coin has been flipped! It's **tails**, you lose! You lost $`{amount}`",
+                                      color=discord.Color.dark_teal())
             await message.edit(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
-
 
     ########################################
     ##### Standalone gambling commands #####
@@ -311,8 +337,8 @@ class Economy(commands.Cog):
         except Exception:
             return await ctx.send("Enter a valid amount.")
 
-        if amount > 10000:
-            return await ctx.send("The limit it $`10000`")
+        if amount > 2500:
+            return await ctx.send("The limit it $`2500`")
 
         if amount > balance:
             return await ctx.send(f"Insufficient funds!")
@@ -351,7 +377,7 @@ class Economy(commands.Cog):
                 break
 
         if win:
-            balance += int(amount * 3)
+            balance += int(amount * 1.3)
             embed = discord.Embed(title=":question: Number Guesser",
                                   description=f"**Correct!** Your earned $`{int(amount * 3)}`",
                                   color=discord.Color.dark_teal())
@@ -424,24 +450,27 @@ class Economy(commands.Cog):
             ["Lock", "$2,000", f"{self.bot.prefix}buy lock"]
         ]
 
-        output = ("The place to buy useful items\n```" + tabulate(entries, tablefmt="simple", headers=["Item", "Cost", "Command"]) + "```")
+        output = ("The place to buy useful items\n```" + tabulate(entries, tablefmt="simple",
+                                                                  headers=["Item", "Cost", "Command"]) + "```")
         embed = discord.Embed(title=":shopping_cart: Item Shop:", description=output, color=discord.Color.gold())
         await ctx.send(embed=embed)
-
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.user)
     async def buy(self, ctx, item, quantity="1"):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         try:
             quantity = int(quantity)
             if quantity <= 0:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
         except Exception:
-            return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+            return await ctx.send(
+                "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
 
         inventory = data["inventory"]
         bal = data["balance"]
@@ -457,7 +486,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -474,7 +504,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -486,7 +518,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -503,7 +536,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -515,7 +550,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -532,7 +568,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -544,7 +582,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -561,7 +600,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -573,7 +614,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -590,7 +632,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -602,7 +646,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -619,7 +664,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -631,7 +678,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -648,7 +696,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -660,7 +710,8 @@ class Economy(commands.Cog):
             cost = int(cost * quantity)
 
             if bal < cost:
-                return await ctx.send(f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
+                return await ctx.send(
+                    f"$`{cost}` is required to purchase this. You only have $`{bal}` and need another $`{cost - bal}` to afford this.")
 
             bal -= cost
 
@@ -677,7 +728,9 @@ class Economy(commands.Cog):
                     item["quantity"] = 1
                     inventory.append(item)
 
-            embed = discord.Embed(title=f"Purchase Successful", description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`", color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description=f"Purchased: {emoji} **{name}**\nQuantity: `{quantity}`\nMoney spent: $`{cost}`\nNew balance: $`{bal}`",
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
@@ -690,20 +743,22 @@ class Economy(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Usage: `{self.bot.prefix}buy (item) [quantity]`")
 
-
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.user)
     async def sell(self, ctx, item, quantity="1"):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         try:
             quantity = int(quantity)
             if quantity <= 0:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
         except Exception:
-            return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+            return await ctx.send(
+                "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
 
         item = item.replace(" ", "").lower()
         items = await self.bot.items.find("items")
@@ -743,7 +798,8 @@ class Economy(commands.Cog):
         if quantity == 1:
             await ctx.send(f"You sold **{emoji} {name}** for $`{value}`. Your balance is now $`{balance}`.")
         else:
-            await ctx.send(f"You sold **{quantity} {emoji} {name}s** for $`{value}` each. Your balance is now $`{balance}`.")
+            await ctx.send(
+                f"You sold **{quantity} {emoji} {name}s** for $`{value}` each. Your balance is now $`{balance}`.")
         await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
         await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
 
@@ -751,7 +807,6 @@ class Economy(commands.Cog):
     async def sell_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Usage: `{self.bot.prefix}sell (item) [quantity]`")
-
 
     @commands.command(aliases=['donate'])
     async def give(self, ctx, user, item, quantity="1"):
@@ -767,7 +822,8 @@ class Economy(commands.Cog):
 
         mydata = await self.bot.inventories.find(ctx.author.id)
         if mydata is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
         myinventory = mydata["inventory"]
 
         items = await self.bot.items.find("items")
@@ -781,9 +837,11 @@ class Economy(commands.Cog):
         try:
             quantity = int(quantity)
             if quantity <= 0:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
         except Exception:
-            return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+            return await ctx.send(
+                "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
 
         if user.id == ctx.author.id:
             return await ctx.send("That's pointless.")
@@ -838,7 +896,6 @@ class Economy(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}give (user) (item) [quantity]`")
 
-
     @commands.command()
     async def pay(self, ctx, user, amount=None):
         if len(ctx.message.mentions) == 0:
@@ -857,13 +914,15 @@ class Economy(commands.Cog):
         try:
             amount = int(amount)
             if amount <= 0:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
         except Exception:
             return await ctx.send(f"Enter a valid amount. Usage: `{self.bot.prefix}pay (user) (amount)`")
 
         author_data = await self.bot.inventories.find(ctx.author.id)
         if author_data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
         author_balance = int(author_data["balance"])
         if amount > author_balance:
             return await ctx.send(f"Insufficient funds, you only have $`{author_balance}`")
@@ -883,7 +942,6 @@ class Economy(commands.Cog):
     async def pay_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}pay (user) (amount)`")
-
 
     @commands.command(aliases=['playershops', 'pshops', 'playershop'])
     async def pshop(self, ctx, argument=None, item=None, cq=None, cq2=None):
@@ -910,11 +968,13 @@ class Economy(commands.Cog):
                     cq2 = 1
                 quantity = int(cq2)
                 if quantity <= 0:
-                    return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                    return await ctx.send(
+                        "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
                 if quantity > 15000:
                     return await ctx.send("The limit is $`15000`")
             except Exception:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
 
             inventory = data["inventory"]
             found = False
@@ -934,7 +994,8 @@ class Economy(commands.Cog):
             try:
                 price = int(cq)
             except Exception:
-                return await ctx.send("Please enter a valid price.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid price.\n**Tip:** Items in commands generally don't contain spaces!")
 
             data = await self.bot.playershops.find(ctx.author.id)
             if data is None:
@@ -1005,7 +1066,7 @@ class Economy(commands.Cog):
 
         # BUY
 
-        elif argument == "buy": # ,pshop buy 1231231 shoppingcart 1
+        elif argument == "buy":  # ,pshop buy 1231231 shoppingcart 1
             if item is None or cq is None:
                 return await ctx.send(f"Usage: `{self.bot.prefix}pshop buy (user) (item) [quantity]`")
 
@@ -1036,7 +1097,8 @@ class Economy(commands.Cog):
                     cq2 = 1
                 quantity = int(cq2)
             except Exception:
-                return await ctx.send("Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
+                return await ctx.send(
+                    "Please enter a valid quantity.\n**Tip:** Items in commands generally don't contain spaces!")
 
             item = item.replace(" ", "").lower()
             items = await self.bot.items.find("items")
@@ -1061,17 +1123,19 @@ class Economy(commands.Cog):
             user_inventory = user_data["inventory"]
             user_balance = user_data["balance"]
 
-
             if quantity > stock:
                 return await ctx.send(f"That quantity is too great. There aren't that many for sale.")
 
             author_data = await self.bot.inventories.find(ctx.author.id)
             if author_data is None:
-                return await ctx.send("I'm suprised you made it this far without initializing your inventory. Go do that though.")
+                return await ctx.send(
+                    "I'm suprised you made it this far without initializing your inventory. Go do that though.")
             author_inventory = author_data["inventory"]
             author_balance = author_data["balance"]
             if author_balance < price * quantity:
-                return await ctx.send("$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(price * quantity, author_balance, price * quantity - author_balance))
+                return await ctx.send(
+                    "$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(
+                        price * quantity, author_balance, price * quantity - author_balance))
 
             # Set balances
             author_balance -= int(price * quantity)
@@ -1097,7 +1161,10 @@ class Economy(commands.Cog):
                     if i["stock"] == 0:
                         shop.remove(i)
 
-            embed = discord.Embed(title=f"Purchase Successful", description="Purchased: {} **{}**\nQuantity: `{:,}`\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(emoji, name, quantity, price * quantity, author_balance), color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description="Purchased: {} **{}**\nQuantity: `{:,}`\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(
+                                      emoji, name, quantity, price * quantity, author_balance),
+                                  color=discord.Color.gold())
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": author_inventory})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": author_balance})
             await self.bot.inventories.upsert({"_id": user.id, "balance": user_balance})
@@ -1107,7 +1174,9 @@ class Economy(commands.Cog):
                 await self.bot.playershops.upsert({"_id": user.id, "shop": shop})
             await ctx.send(embed=embed)
 
-            embed = discord.Embed(title=f"**{ctx.author}** bought from your shop!", description="Purchased: {} **{}**\nQuantity: `{:,}`\nMoney gained: $`{:,}`".format(emoji, name, quantity, price * quantity), color=discord.Color.gold())
+            embed = discord.Embed(title=f"**{ctx.author}** bought from your shop!",
+                                  description="Purchased: {} **{}**\nQuantity: `{:,}`\nMoney gained: $`{:,}`".format(
+                                      emoji, name, quantity, price * quantity), color=discord.Color.gold())
             embed.set_footer(text=f"ID: {ctx.author.id}")
             try:
                 await user.send(embed=embed)
@@ -1148,7 +1217,8 @@ class Economy(commands.Cog):
                 entries.append(["OUT", "OF", "STOCK"])
 
             output = ("```" + tabulate(entries, tablefmt="simple", headers=["Item", "Price", "Stock"]) + "```")
-            embed = discord.Embed(title=f":shopping_cart: **{user.name}'s** Shop", description=output, color=discord.Color.gold())
+            embed = discord.Embed(title=f":shopping_cart: **{user.name}'s** Shop", description=output,
+                                  color=discord.Color.gold())
             await ctx.send(embed=embed)
 
 
@@ -1159,7 +1229,8 @@ class Economy(commands.Cog):
             if shops == []:
                 entries.append(["None", 0, 0])
                 output = ("```" + tabulate(entries, tablefmt="simple", headers=["Player", "Items", "User ID"]) + "```")
-                embed = discord.Embed(title=f":shopping_cart: Player Shops:", description=output, color=discord.Color.gold())
+                embed = discord.Embed(title=f":shopping_cart: Player Shops:", description=output,
+                                      color=discord.Color.gold())
                 return await ctx.send(embed=embed)
             else:
                 for i in shops:
@@ -1171,18 +1242,19 @@ class Economy(commands.Cog):
                     entries.append([user, stock, int(id)])
 
                 output = ("```" + tabulate(entries, tablefmt="simple", headers=["Player", "Items", "User ID"]) + "```")
-                embed = discord.Embed(title=f":shopping_cart: Player Shops:", description=output, color=discord.Color.gold())
+                embed = discord.Embed(title=f":shopping_cart: Player Shops:", description=output,
+                                      color=discord.Color.gold())
                 return await ctx.send(embed=embed)
-
 
     @commands.command(aliases=['bank'])
     async def banks(self, ctx, *, item="n"):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         price = {"small": 1250, "medium": 2500, "large": 5000, "massive": 10000}
-        stores = {"small": 2500, "medium":7500 , "large": 20000, "massive": 50000}
+        stores = {"small": 2500, "medium": 7500, "large": 20000, "massive": 50000}
 
         inventory = data["inventory"]
         bal = data["balance"]
@@ -1193,66 +1265,87 @@ class Economy(commands.Cog):
             cost = price["small"]
 
             if bal < cost:
-                return await ctx.send("$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(cost, bal, cost - bal))
+                return await ctx.send(
+                    "$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(
+                        cost, bal, cost - bal))
 
             bal -= cost
             banklimit += stores["small"]
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "banklimit": banklimit})
-            embed = discord.Embed(title=f"Purchase Successful", description="Purchased: :bank: **Small Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(cost, bal), color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description="Purchased: :bank: **Small Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(
+                                      cost, bal), color=discord.Color.gold())
             await ctx.send(embed=embed)
 
         elif item == "mediumbankslot" or item == "mediumbank":
             cost = price["medium"]
 
             if bal < cost:
-                return await ctx.send("$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(cost, bal, cost - bal))
+                return await ctx.send(
+                    "$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(
+                        cost, bal, cost - bal))
 
             bal -= cost
             banklimit += stores["medium"]
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "banklimit": banklimit})
-            embed = discord.Embed(title=f"Purchase Successful", description="Purchased: :bank: **Medium Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(cost, bal), color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description="Purchased: :bank: **Medium Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(
+                                      cost, bal), color=discord.Color.gold())
             await ctx.send(embed=embed)
 
         elif item == "largebankslot" or item == "largebank":
             cost = price["large"]
 
             if bal < cost:
-                return await ctx.send("$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(cost, bal, cost - bal))
+                return await ctx.send(
+                    "$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(
+                        cost, bal, cost - bal))
 
             bal -= cost
             banklimit += stores["large"]
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "banklimit": banklimit})
-            embed = discord.Embed(title=f"Purchase Successful", description="Purchased: :bank: **Large Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(cost, bal), color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description="Purchased: :bank: **Large Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(
+                                      cost, bal), color=discord.Color.gold())
             await ctx.send(embed=embed)
 
         elif item == "massivebankslot" or item == "massivebank":
             cost = price["massive"]
 
             if bal < cost:
-                return await ctx.send("$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(cost, bal, cost - bal))
+                return await ctx.send(
+                    "$`{:,}` is required to purchase this. You only have $`{:,}` and need another $`{:,}` to afford this.".format(
+                        cost, bal, cost - bal))
 
             bal -= cost
             banklimit += stores["massive"]
             await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
             await self.bot.inventories.upsert({"_id": ctx.author.id, "banklimit": banklimit})
-            embed = discord.Embed(title=f"Purchase Successful", description="Purchased: :bank: **Massive Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(cost, bal), color=discord.Color.gold())
+            embed = discord.Embed(title=f"Purchase Successful",
+                                  description="Purchased: :bank: **Massive Bank Slot**\nMoney spent: $`{:,}`\nNew balance: $`{:,}`".format(
+                                      cost, bal), color=discord.Color.gold())
             await ctx.send(embed=embed)
 
         else:
             entries = [
-                ["Small Bank Slot", "${:,}".format(price["small"]), "${:,}".format(stores["small"]), f"{self.bot.prefix}bank small bank slot"],
-                ["Medium Bank Slot", "${:,}".format(price["medium"]), "${:,}".format(stores["medium"]), f"{self.bot.prefix}bank medium bank slot"],
-                ["Large Bank Slot", "${:,}".format(price["large"]), "${:,}".format(stores["large"]), f"{self.bot.prefix}bank large bank slot"],
-                ["Massive Bank Slot", "${:,}".format(price["massive"]), "${:,}".format(stores["massive"]), f"{self.bot.prefix}bank massive bank slot"]
+                ["Small Bank Slot", "${:,}".format(price["small"]), "${:,}".format(stores["small"]),
+                 f"{self.bot.prefix}bank smallbank"],
+                ["Medium Bank Slot", "${:,}".format(price["medium"]), "${:,}".format(stores["medium"]),
+                 f"{self.bot.prefix}bank mediumbank"],
+                ["Large Bank Slot", "${:,}".format(price["large"]), "${:,}".format(stores["large"]),
+                 f"{self.bot.prefix}bank largebank"],
+                ["Massive Bank Slot", "${:,}".format(price["massive"]), "${:,}".format(stores["massive"]),
+                 f"{self.bot.prefix}bank massivebank"]
             ]
 
-            output = ("Protect your money from thieves\n```" + tabulate(entries, tablefmt="simple", headers=["Item", "Cost", "Stores", "Command"]) + "```")
+            output = ("Protect your money from thieves\n```" + tabulate(entries, tablefmt="simple",
+                                                                        headers=["Item", "Cost", "Stores",
+                                                                                 "Command"]) + "```")
             embed = discord.Embed(title=":bank: Banks:", description=output, color=discord.Color.gold())
             await ctx.send(embed=embed)
-
 
     @commands.command(aliases=['dep'])
     async def deposit(self, ctx, amount="null"):
@@ -1270,7 +1363,8 @@ class Economy(commands.Cog):
         data = await self.bot.inventories.find(ctx.author.id)
 
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         balance = data["balance"]
         bankbalance = data["bankbalance"]
@@ -1282,13 +1376,17 @@ class Economy(commands.Cog):
             return await ctx.send(f"A **:bank: Bank Slot** hasn't been bought yet. Do `{self.bot.prefix}banks`.")
 
         if bankbalance == banklimit:
-            return await ctx.send("Your bank balance is full with $`{:,}`. Purchase a larger bank slot at `{}banks`.".format(bankbalance, self.bot.prefix))
+            return await ctx.send(
+                "Your bank balance is full with $`{:,}`. Purchase a larger bank slot at `{}banks`.".format(bankbalance,
+                                                                                                           self.bot.prefix))
 
         if balance == 0:
             return await ctx.send("Your balance is empty.")
 
         if amount + bankbalance > banklimit:
-            return await ctx.send("This would put your bank balance over $`{:,}` which is your limit. Increase this limit by purchasing a larger bank slot at `{}banks`.".format(banklimit,self.bot.prefix))
+            return await ctx.send(
+                "This would put your bank balance over $`{:,}` which is your limit. Increase this limit by purchasing a larger bank slot at `{}banks`.".format(
+                    banklimit, self.bot.prefix))
 
         if amount > balance:
             return await ctx.send("You only have $`{:,}` available to deposit.".format(balance))
@@ -1297,14 +1395,15 @@ class Economy(commands.Cog):
         bankbalance += amount
         await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
         await self.bot.inventories.upsert({"_id": ctx.author.id, "bankbalance": bankbalance})
-        embed = discord.Embed(title=":bank: Deposit Successful", description="$`{:,}` has been deposited\nBank balance: $`{:,}`/`{:,}`\nBalance: $`{:,}`".format(amount, bankbalance, banklimit, balance), color=discord.Color.gold())
+        embed = discord.Embed(title=":bank: Deposit Successful",
+                              description="$`{:,}` has been deposited\nBank balance: $`{:,}`/`{:,}`\nBalance: $`{:,}`".format(
+                                  amount, bankbalance, banklimit, balance), color=discord.Color.gold())
         await ctx.send(embed=embed)
 
     @deposit.error
     async def deposit_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Usage: `{self.bot.prefix}deposit (amount)`")
-
 
     @commands.command()
     async def withdraw(self, ctx, amount="null"):
@@ -1322,7 +1421,8 @@ class Economy(commands.Cog):
         data = await self.bot.inventories.find(ctx.author.id)
 
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         balance = data["balance"]
         bankbalance = data["bankbalance"]
@@ -1340,13 +1440,16 @@ class Economy(commands.Cog):
         balance += amount
         await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
         await self.bot.inventories.upsert({"_id": ctx.author.id, "bankbalance": bankbalance})
-        embed = discord.Embed(title=":bank: Withdrawal Successful", description="$`{:,}` has been withdrawn\nBank balance: $`{:,}`/`{:,}`\nBalance: $`{:,}`".format(amount, bankbalance, banklimit, balance), color=discord.Color.gold())
+        embed = discord.Embed(title=":bank: Withdrawal Successful",
+                              description="$`{:,}` has been withdrawn\nBank balance: $`{:,}`/`{:,}`\nBalance: $`{:,}`".format(
+                                  amount, bankbalance, banklimit, balance), color=discord.Color.gold())
         await ctx.send(embed=embed)
 
     @withdraw.error
     async def withdraw_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Usage: `{self.bot.prefix}withdraw (amount)`")
+
 
 def setup(bot):
     bot.add_cog(Economy(bot))

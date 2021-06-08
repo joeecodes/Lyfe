@@ -1,6 +1,3 @@
-import random
-
-import discord
 from discord.ext import commands
 
 from utils.util import Pag
@@ -11,13 +8,13 @@ def is_dev():
         devs = utils.json.read_json("devs")
         if ctx.author.id in devs:
             return ctx.author.id
+
     return commands.check(predictate)
+
 
 class Usage(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):

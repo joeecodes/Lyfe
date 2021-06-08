@@ -1,17 +1,21 @@
-import discord, platform, logging, random, os, time, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import asyncio
+import discord
+import random
+import time
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
-from tabulate import tabulate
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Custom cooldown variables
 on_cooldown = {}
 last_command = {}
 cooldown = {"fastfoodworker": 600, "janitor": 1800, "mage": 3600}
+
 
 class Jobs(commands.Cog):
 
@@ -34,9 +38,15 @@ class Jobs(commands.Cog):
             description=f"**Current Job:** `{job}`\nEarn varying amounts of money every certain amount of time\nEach job is different so take your pick!\n**Note:** Every job requires an :card_index: **ID**",
             color=discord.Color.greyple(),
         )
-        embed.add_field(name=":hamburger: Fast Food Worker", value=f"Just repeat the ice cream machine is broken and you'll do great\n**Earns:** $`20` every `10 minutes`\n`{self.bot.prefix}apply fast food worker`", inline=False)
-        embed.add_field(name=":broom: Janitor", value=f"Make some floors shiny\n**Earns:** $`100` every `30 minutes`\n`{self.bot.prefix}apply janitor`", inline=False)
-        embed.add_field(name=":mage: Mage", value=f"You'll encounter many weird words called spells\n**Earns:** $`150` every `1 hour`.\n`{self.bot.prefix}apply mage`", inline=False)
+        embed.add_field(name=":hamburger: Fast Food Worker",
+                        value=f"Just repeat the ice cream machine is broken and you'll do great\n**Earns:** $`20` every `10 minutes`\n`{self.bot.prefix}apply fast food worker`",
+                        inline=False)
+        embed.add_field(name=":broom: Janitor",
+                        value=f"Make some floors shiny\n**Earns:** $`100` every `30 minutes`\n`{self.bot.prefix}apply janitor`",
+                        inline=False)
+        embed.add_field(name=":mage: Mage",
+                        value=f"You'll encounter many weird words called spells\n**Earns:** $`150` every `1 hour`.\n`{self.bot.prefix}apply mage`",
+                        inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -64,17 +74,20 @@ class Jobs(commands.Cog):
         job = job.replace(" ", "").lower()
 
         if "fastfood" in job or "worker" in job:
-            embed = discord.Embed(title="You successfully became a :hamburger: **Fast Food Worker**", description="**Earns:** $`20` every `10 minutes`", color=discord.Color.greyple())
+            embed = discord.Embed(title="You successfully became a :hamburger: **Fast Food Worker**",
+                                  description="**Earns:** $`20` every `10 minutes`", color=discord.Color.greyple())
             await self.bot.inventories.upsert({"_id": ctx.author.id, "job": "fastfoodworker"})
             await ctx.send(embed=embed)
 
         elif job == "janitor":
-            embed = discord.Embed(title="You successfully became a :broom: **Janitor**", description="**Earns:** $`100` every `30 minutes`", color=discord.Color.greyple())
+            embed = discord.Embed(title="You successfully became a :broom: **Janitor**",
+                                  description="**Earns:** $`100` every `30 minutes`", color=discord.Color.greyple())
             await self.bot.inventories.upsert({"_id": ctx.author.id, "job": "janitor"})
             await ctx.send(embed=embed)
 
         elif job == "mage":
-            embed = discord.Embed(title="You successfully became a :mage: **Mage**", description="**Earns:** $`150` every `60 minutes`", color=discord.Color.greyple())
+            embed = discord.Embed(title="You successfully became a :mage: **Mage**",
+                                  description="**Earns:** $`150` every `60 minutes`", color=discord.Color.greyple())
             await self.bot.inventories.upsert({"_id": ctx.author.id, "job": "mage"})
             await ctx.send(embed=embed)
 
@@ -154,12 +167,15 @@ class Jobs(commands.Cog):
                 # WORK
                 work = utils.json.read_json("fastfoodwork")
                 word = random.choice(list(work))
-                embed = discord.Embed(title=f"Name the emoji {word}", description="You will be rewarded double if you name it within 3 seconds.", color=discord.Color.greyple())
+                embed = discord.Embed(title=f"Name the emoji {word}",
+                                      description="You will be rewarded double if you name it within 3 seconds.",
+                                      color=discord.Color.greyple())
                 await ctx.send(embed=embed)
                 timer = time.time()
 
                 def check(m):
                     return m.channel == ctx.channel and m.author == ctx.author
+
                 try:
                     message = await self.bot.wait_for('message', check=check, timeout=20)
 
@@ -167,7 +183,8 @@ class Jobs(commands.Cog):
                     if any(ele in message.content.replace(" ", "").lower() for ele in words):
                         if time.time() - timer <= 3:
                             pay = int(pay * 2)
-                            await ctx.send(f"**Correct!** You were paid $`{pay}` as you named the emoji within 3 seconds")
+                            await ctx.send(
+                                f"**Correct!** You were paid $`{pay}` as you named the emoji within 3 seconds")
                         else:
                             await ctx.send(f"**Correct!** You were paid $`{pay}`")
                     else:
@@ -190,7 +207,8 @@ class Jobs(commands.Cog):
                 elif int(h) == 0 and int(m) != 0:
                     await ctx.send(f':card_box: You must wait **{int(m)} minutes and {int(s)} seconds** to work again.')
                 else:
-                    await ctx.send(f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
+                    await ctx.send(
+                        f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
                 return
 
         elif job == "janitor":
@@ -203,18 +221,22 @@ class Jobs(commands.Cog):
                 pay = 100
 
                 # WORK
-                emojis = ['\ud83e\uddf9', '\ud83d\udca1', '\ud83e\uddfd', "\ud83e\uddfb", "\ud83e\uddfc", "\ud83e\uddef", "\ud83d\udeb0", "\ud83d\udebd", "\ud83d\udd11"]
+                emojis = ['\ud83e\uddf9', '\ud83d\udca1', '\ud83e\uddfd', "\ud83e\uddfb", "\ud83e\uddfc",
+                          "\ud83e\uddef", "\ud83d\udeb0", "\ud83d\udebd", "\ud83d\udd11"]
                 emoji = random.choice(emojis)
-                embed = discord.Embed(title=f"Send a message containing this emoji: {emoji}", description="You will be paid 20% more if you do so within 5 seconds.", color=discord.Color.greyple())
+                embed = discord.Embed(title=f"Send a message containing this emoji: {emoji}",
+                                      description="You will be paid 20% more if you do so within 5 seconds.",
+                                      color=discord.Color.greyple())
                 await ctx.send(embed=embed)
                 timer = time.time()
 
                 def check(m):
                     return m.channel == ctx.channel and m.author == ctx.author
+
                 try:
                     message = await self.bot.wait_for('message', check=check, timeout=20)
 
-                    emoji = emoji.encode('utf-16','surrogatepass').decode('utf-16')
+                    emoji = emoji.encode('utf-16', 'surrogatepass').decode('utf-16')
 
                     if emoji in message.content:
                         if time.time() - timer <= 5:
@@ -242,7 +264,8 @@ class Jobs(commands.Cog):
                 elif int(h) == 0 and int(m) != 0:
                     await ctx.send(f':card_box: You must wait **{int(m)} minutes and {int(s)} seconds** to work again.')
                 else:
-                    await ctx.send(f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
+                    await ctx.send(
+                        f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
                 return
 
         elif job == "mage":
@@ -257,12 +280,15 @@ class Jobs(commands.Cog):
                 # WORK
                 spells = utils.json.read_json("spells")
                 spell = random.choice(spells["spells"])
-                embed = discord.Embed(title=f"Type the spell `{spell}`", description="You will be rewarded 20% more if you spell it within 5 seconds.", color=discord.Color.greyple())
+                embed = discord.Embed(title=f"Type the spell `{spell}`",
+                                      description="You will be rewarded 20% more if you spell it within 5 seconds.",
+                                      color=discord.Color.greyple())
                 await ctx.send(embed=embed)
                 timer = time.time()
 
                 def check(m):
                     return m.channel == ctx.channel and m.author == ctx.author
+
                 try:
                     message = await self.bot.wait_for('message', check=check, timeout=20)
 
@@ -274,7 +300,8 @@ class Jobs(commands.Cog):
                             await ctx.send(f"**Correct!** You were paid $`{pay}`")
                     else:
                         pay = int(pay * 0.5)
-                        await ctx.send(f"**Incorrect!** The lead mage looks upon you with distaste - You were only paid $`{pay}`")
+                        await ctx.send(
+                            f"**Incorrect!** The lead mage looks upon you with distaste - You were only paid $`{pay}`")
 
                 except asyncio.TimeoutError:
                     pay = int(pay * 0.5)
@@ -292,7 +319,8 @@ class Jobs(commands.Cog):
                 elif int(h) == 0 and int(m) != 0:
                     await ctx.send(f':card_box: You must wait **{int(m)} minutes and {int(s)} seconds** to work again.')
                 else:
-                    await ctx.send(f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
+                    await ctx.send(
+                        f':card_box: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to work again.')
                 return
 
         else:
@@ -308,11 +336,16 @@ class Jobs(commands.Cog):
         data = await self.bot.inventories.find(ctx.author.id)
         user = ctx.author
         if data["job"] is None:
-            nojob = discord.Embed(title=f":dollar:  {user.name} is begging for money!", description=f"I think {user.name} should get a job! Do `{self.bot.prefix}jobs` for more infortmation!", color=discord.Color.gold())
+            nojob = discord.Embed(title=f":dollar:  {user.name} is begging for money!",
+                                  description=f"I think {user.name} should get a job! Do `{self.bot.prefix}jobs` for more infortmation!",
+                                  color=discord.Color.gold())
             await ctx.send(embed=nojob)
         else:
-            hasjob = discord.Embed(title=f":dollar:  {user.name} is begging for money!", description=f"I think {user.name} should do their job! Do `{self.bot.prefix}work` to work!", color=discord.Color.gold())
+            hasjob = discord.Embed(title=f":dollar:  {user.name} is begging for money!",
+                                   description=f"I think {user.name} should do their job! Do `{self.bot.prefix}work` to work!",
+                                   color=discord.Color.gold())
             await ctx.send(embed=hasjob)
+
 
 def setup(bot):
     bot.add_cog(Jobs(bot))

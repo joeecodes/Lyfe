@@ -1,12 +1,21 @@
-import discord, platform, logging, random, os, time, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
 from tabulate import tabulate
 from datetime import datetime, timedelta
+
+def is_dev():
+    def predictate(ctx):
+        devs = utils.json.read_json("devs")
+        if ctx.author.id in devs:
+            return ctx.author.id
+    return commands.check(predictate)
 
 class Misc(commands.Cog):
 
@@ -44,7 +53,10 @@ class Misc(commands.Cog):
     async def _8Ball(self, ctx, *, question=None):
         if not question:
             return await ctx.send(":8ball: **8Ball:** Well that's cool but you actually have to ask something.")
-        responses = ["Outlook unclear, try again later", "Sorry m8, try again", "mhm", "I don't know, you tell me", "lol", "Absolutely!", "Absolutely not!", "It's a yes from me", "It's a no from me", "Do what Jesus would do", "Nahhhh", "Sure I guess...", "It's plausible", "I don't think you'll like the answer...", "I think it's best I spare you of the truth."]
+        responses = ["Outlook unclear, try again later", "Sorry m8, try again", "mhm", "I don't know, you tell me",
+                     "lol", "Absolutely!", "Absolutely not!", "It's a yes from me", "It's a no from me",
+                     "Do what Jesus would do", "Nahhhh", "Sure I guess...", "It's plausible",
+                     "I don't think you'll like the answer...", "I think it's best I spare you of the truth."]
         wisdom = random.choice(responses)
         await ctx.send(f":8ball: **8Ball:** {wisdom}")
 
@@ -81,7 +93,9 @@ class Misc(commands.Cog):
             await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
             return await ctx.send("You fed a :frog: **Frog** to your :dragon: **Dragon**.")
 
-        embed = discord.Embed(title=":tada: Your :dragon: **Dragon** evolved into an <:reddragon:733766679036952646> **Evolved Dragon**", description="The chances of this event occuring are 1% - Well done!", color=discord.Color.green())
+        embed = discord.Embed(
+            title=":tada: Your :dragon: **Dragon** evolved into an <:reddragon:733766679036952646> **Evolved Dragon**",
+            description="The chances of this event occuring are 1% - Well done!", color=discord.Color.green())
         await ctx.send(embed=embed)
 
         locked = False
@@ -192,7 +206,24 @@ class Misc(commands.Cog):
         welcomebed.set_thumbnail(url=self.bot.user.avatar_url)
         return await ctx.send(embed=welcomebed)
 
-
+    @commands.command()
+    @is_dev()
+    async def hello(self, ctx, user:discord.Member=None):
+        if len(ctx.message.mentions) == 0:
+            try:
+                user = self.bot.get_user(int(user))
+                if user is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.send("I couldn't find that user.\n**Tip:** Mention them or use their id.")
+            except ValueError:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.send("I couldn't find that user.\n**Tip:** Mention them or use their id.")
+        else:
+            user = ctx.message.mentions[0]
+        if user is None:
+            return await ctx.send(f"Hello, {ctx.author.mention}")
+        else:
+            return await ctx.send(f"{user.mention}, {ctx.author.mention} says hello!")
 
 def setup(bot):
     bot.add_cog(Misc(bot))

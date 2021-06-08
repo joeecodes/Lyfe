@@ -1,14 +1,15 @@
-import discord, platform, logging, random, os, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
-from tabulate import tabulate
-from datetime import datetime
 
 robberytools = ["knife", "gun", "hammer"]
+
 
 class Crime(commands.Cog):
 
@@ -36,7 +37,8 @@ class Crime(commands.Cog):
 
         mydata = await self.bot.inventories.find(ctx.author.id)
         if mydata is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         yourdata = await self.bot.inventories.find(user.id)
         if yourdata is None:
@@ -95,9 +97,10 @@ class Crime(commands.Cog):
         chance = int(tool["description"][:3].strip("% "))
 
         toolname, itemname = tool["name"], item["name"]
-        toolemoji, itememoji = items[toolname.replace(" ", "").lower()]["emoji"], items[itemname.replace(" ", "").lower()]["emoji"]
+        toolemoji, itememoji = items[toolname.replace(" ", "").lower()]["emoji"], \
+                               items[itemname.replace(" ", "").lower()]["emoji"]
 
-        if rand <= chance: # Success
+        if rand <= chance:  # Success
             for i in yourinventory:
                 if i["name"] == item["name"]:
                     if i["quantity"] == 1:
@@ -122,7 +125,7 @@ class Crime(commands.Cog):
                 description=f"**Robbery Succeeded**\n**{ctx.author.name}** gained **{itememoji} {itemname}** from **{user.name}**.\n**{ctx.author.name}** used **{toolemoji} {toolname}** to commit the robbery.",
                 color=discord.Color.green()
             )
-            await ctx.send(embed = embed)
+            await ctx.send(embed=embed)
             try:
                 embed = discord.Embed(
                     title=f":moneybag: {ctx.author.name} has robbed you!",
@@ -133,7 +136,7 @@ class Crime(commands.Cog):
             except discord.Forbidden:
                 pass
 
-        else: # Fail
+        else:  # Fail
             failureReasons = utils.json.read_json("robbery")
             failureReason = random.choice(failureReasons["failureReasons"])
             embed = discord.Embed(
@@ -141,7 +144,7 @@ class Crime(commands.Cog):
                 description=f"{failureReason}\n**{ctx.author.name}** lost **{toolemoji} {toolname}** while trying to steal **{itememoji} {itemname}** from **{user.name}**.",
                 color=discord.Color.red()
             )
-            await ctx.send(embed = embed)
+            await ctx.send(embed=embed)
             try:
                 embed = discord.Embed(
                     title=f":moneybag: {ctx.author.name} attempted to rob you!",
@@ -160,13 +163,15 @@ class Crime(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             data = await self.bot.inventories.find(ctx.author.id)
             if data is None:
-                return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+                return await ctx.send(
+                    f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
             items = await self.bot.items.find("items")
             items = items["items"]
             inventory = data["inventory"]
 
-            embed = discord.Embed(title=f":hammer_pick: **{ctx.author.name}'s Robbery Tools**", color=discord.Color.blue())
+            embed = discord.Embed(title=f":hammer_pick: **{ctx.author.name}'s Robbery Tools**",
+                                  color=discord.Color.blue())
             empty = True
             for i in inventory:
                 name = i["name"]
@@ -174,14 +179,15 @@ class Crime(commands.Cog):
                     locked, quantity = i["locked"], i["quantity"]
                     item = items[name.replace(" ", "").lower()]
                     desc, emoji, value = item["description"], item["emoji"], item["value"]
-                    embed.add_field(name=f"{emoji} {name}", value=f"**Description:** `{desc}`\n**Locked:** `{locked}`\n**Value:** $`{value}`\n**Quantity:** `{quantity}`", inline=False)
+                    embed.add_field(name=f"{emoji} {name}",
+                                    value=f"**Description:** `{desc}`\n**Locked:** `{locked}`\n**Value:** $`{value}`\n**Quantity:** `{quantity}`",
+                                    inline=False)
                     empty = False
 
             if empty:
                 embed.add_field(name="You don't have any robbery tools!", value="`No robbing for you :(`", inline=False)
             embed.add_field(name="Usage:", value=f"`{self.bot.prefix}robbery (victim) (tool) (item)`", inline=False)
             return await ctx.send(embed=embed)
-
 
     @commands.command(aliases=["mug"])
     async def steal(self, ctx, user, amount=1):
@@ -197,7 +203,8 @@ class Crime(commands.Cog):
 
         author_data = await self.bot.inventories.find(ctx.author.id)
         if author_data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         if user == ctx.author:
             return await ctx.send("You put the money in the bag and then took it back home.")
@@ -220,7 +227,8 @@ class Crime(commands.Cog):
             if bankbal == 0:
                 return await ctx.send(f"**{user.name}** is practically broke, leave them alone will ya?")
             else:
-                return await ctx.send(f"**{user.name}** doesn't have enough money in their inventory for you to yoink. Maybe check their bank account :smirk:")
+                return await ctx.send(
+                    f"**{user.name}** doesn't have enough money in their inventory for you to yoink. Maybe check their bank account :smirk:")
 
         found = False
         for i in inventory:
@@ -248,7 +256,8 @@ class Crime(commands.Cog):
             failureReason = random.choice(failureReasons["failureReasons"])
             embed = discord.Embed(
                 title=f":moneybag: {ctx.author.name}'s robbery from {user.name}",
-                description="{}\n**{}** lost **:gun: Gun** while trying to steal $`{:,}` from **{}**.".format(failureReason, ctx.author.name, amount, user.name),
+                description="{}\n**{}** lost **:gun: Gun** while trying to steal $`{:,}` from **{}**.".format(
+                    failureReason, ctx.author.name, amount, user.name),
                 color=discord.Color.red()
             )
             await ctx.send(embed=embed)
@@ -256,7 +265,8 @@ class Crime(commands.Cog):
             try:
                 embed = discord.Embed(
                     title=f":moneybag: {ctx.author.name} attempted to rob you!",
-                    description="{}\n**{}** lost **:gun: Gun** while trying to steal $`{:,}` from **{}**.".format(failureReason, ctx.author.name, amount, user.name),
+                    description="{}\n**{}** lost **:gun: Gun** while trying to steal $`{:,}` from **{}**.".format(
+                        failureReason, ctx.author.name, amount, user.name),
                     color=discord.Color.green()
                 )
                 await user.send(embed=embed)
@@ -274,7 +284,8 @@ class Crime(commands.Cog):
 
         embed = discord.Embed(
             title=f":moneybag: {ctx.author.name}'s robbery from {user.name}",
-            description="**{}** stole $`{:,}` from **{}** with a :gun: **Gun**.".format(ctx.author.name, amount, user.name),
+            description="**{}** stole $`{:,}` from **{}** with a :gun: **Gun**.".format(ctx.author.name, amount,
+                                                                                        user.name),
             color=discord.Color.green()
         )
 
@@ -285,7 +296,8 @@ class Crime(commands.Cog):
         try:
             embed = discord.Embed(
                 title=f":moneybag: {ctx.author.name} has robbed you!",
-                description="**{}** stole $`{:,}` from **{}** with a :gun: **Gun**.".format(ctx.author.name, amount, user.name),
+                description="**{}** stole $`{:,}` from **{}** with a :gun: **Gun**.".format(ctx.author.name, amount,
+                                                                                            user.name),
                 color=discord.Color.red()
             )
 
@@ -297,7 +309,6 @@ class Crime(commands.Cog):
     async def steal_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}steal (user) (amount)`")
-
 
     @commands.command()
     @commands.cooldown(1, 900, commands.BucketType.user)
@@ -317,7 +328,8 @@ class Crime(commands.Cog):
         author_data = await self.bot.inventories.find(ctx.author.id)
         if author_data is None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         user_data = await self.bot.inventories.find(user.id)
         if user_data is None:
@@ -351,7 +363,8 @@ class Crime(commands.Cog):
                 return await ctx.send(f"**{user.name}** is incredibly poor, leave them alone will ya?")
             else:
                 ctx.command.reset_cooldown(ctx)
-                return await ctx.send(f"**{user.name}** doesn't have enough money in their inventory for you to blow up. Maybe check their bank account :smirk:")
+                return await ctx.send(
+                    f"**{user.name}** doesn't have enough money in their inventory for you to blow up. Maybe check their bank account :smirk:")
 
         originalbalance = balance
         balance = int(balance * 0.8)
@@ -369,7 +382,6 @@ class Crime(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             ctx.command.reset_cooldown(ctx)
             return await ctx.send(f"Usage: `{self.bot.prefix}dynamite (user)`")
-
 
     @commands.command()
     @commands.cooldown(1, 900, commands.BucketType.user)
@@ -389,7 +401,8 @@ class Crime(commands.Cog):
         author_data = await self.bot.inventories.find(ctx.author.id)
         if author_data is None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
         user_data = await self.bot.inventories.find(user.id)
         if user_data is None:
@@ -423,11 +436,13 @@ class Crime(commands.Cog):
         originalbalance = bankbal
         bankbal = int(bankbal * 0.9)
 
-        await ctx.send(":bomb: You blew up $`{:,}` of **{}'s** money in their bank.".format(int(originalbalance * 0.1),user.name))
+        await ctx.send(
+            ":bomb: You blew up $`{:,}` of **{}'s** money in their bank.".format(int(originalbalance * 0.1), user.name))
         await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
         await self.bot.inventories.upsert({"_id": user.id, "bankbalance": bankbal})
         try:
-            await user.send("**{}** blew up $`{:,}` of your money in your bank!".format(ctx.author, int(originalbalance * 0.1)))
+            await user.send(
+                "**{}** blew up $`{:,}` of your money in your bank!".format(ctx.author, int(originalbalance * 0.1)))
         except discord.Forbidden:
             pass
 
@@ -511,12 +526,11 @@ class Crime(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             ctx.command.reset_cooldown(ctx)
             return await ctx.send(f"Usage: `{self.bot.prefix}axe (user) (item)`")
-            
 
     @commands.command()
     @commands.cooldown(1, 900, commands.BucketType.user)
     async def burn(self, ctx, user, item):
-        if len(ctx.message.mentions) == 0: #checking for user
+        if len(ctx.message.mentions) == 0:  # checking for user
             try:
                 user = self.bot.get_user(int(user))
                 if user is None:
@@ -528,12 +542,13 @@ class Crime(commands.Cog):
         else:
             user = ctx.message.mentions[0]
 
-        author_data = await self.bot.inventories.find(ctx.author.id) #checking if user has an inventory
+        author_data = await self.bot.inventories.find(ctx.author.id)  # checking if user has an inventory
         if author_data is None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send(f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet.  Do `{self.bot.prefix}inv` to get started!")
 
-        user_data = await self.bot.inventories.find(user.id) #checking if targeted user has an inventory
+        user_data = await self.bot.inventories.find(user.id)  # checking if targeted user has an inventory
         if user_data is None:
             ctx.command.reset_cooldown(ctx)
             return await ctx.send(f"**{user.name}** hasn't initialized their inventory yet.")
@@ -541,7 +556,7 @@ class Crime(commands.Cog):
         inventory = author_data["inventory"]
         targetInventory = user_data["inventory"]
 
-        items = await self.bot.items.find("items") #checking for item existing
+        items = await self.bot.items.find("items")  # checking for item existing
         items = items["items"]
         if item.lower() not in items:
             return await ctx.send("That item does not exist.")
@@ -555,7 +570,7 @@ class Crime(commands.Cog):
         if name == "fire_extinguisher":
             ctx.command.reset_cooldown(ctx)
             return await ctx.send("No-")
-        found = False #checking for fire
+        found = False  # checking for fire
         for i in inventory:
             if i["name"] == "Fire":
                 if i["quantity"] != 1:
@@ -566,12 +581,14 @@ class Crime(commands.Cog):
 
         if not found:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send("You don't have :fire: **Fire** in your inventory.") #"how would you try to burn someone without fire dumbass"
+            return await ctx.send(
+                "You don't have :fire: **Fire** in your inventory.")  # "how would you try to burn someone without fire dumbass"
 
         if user == ctx.author:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send("Burning yourself may not be the wisest choice, Do you wanna talk about it?") #i think they need a therapist
-        safe = False #checking for fire extinguisher
+            return await ctx.send(
+                "Burning yourself may not be the wisest choice, Do you wanna talk about it?")  # i think they need a therapist
+        safe = False  # checking for fire extinguisher
         for i in targetInventory:
             if i["name"] == "Fire Extinguisher":
                 if i["quantity"] != 1:
@@ -580,24 +597,27 @@ class Crime(commands.Cog):
                     targetInventory.remove(i)
                 safe = True
         if safe == True:
-            await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory}) #updating the target inv and user inv
+            await self.bot.inventories.upsert(
+                {"_id": ctx.author.id, "inventory": inventory})  # updating the target inv and user inv
             await self.bot.inventories.upsert({"_id": user.id, "inventory": targetInventory})
             try:
-                await user.send(f"**{ctx.author}** tried to burn your **{name}** but you extinguised the fire costing **1 Fire extinguisher** :fire_extinguisher:")
+                await user.send(
+                    f"**{ctx.author}** tried to burn your **{name}** but you extinguised the fire costing **1 Fire extinguisher** :fire_extinguisher:")
             except discord.Forbidden:
                 pass
-            return await ctx.send(f"Uh oh! **{user.name}** had a **:fire_extinguisher: Fire Extinguisher** and put the fire out!")
+            return await ctx.send(
+                f"Uh oh! **{user.name}** had a **:fire_extinguisher: Fire Extinguisher** and put the fire out!")
         change = False
-        for i in targetInventory:#whatt no ofc i didnt steal this from admin.py
+        for i in targetInventory:  # whatt no ofc i didnt steal this from admin.py
             if i["name"] == name:
                 quantity = i["quantity"]
                 if quantity == 1:
                     targetInventory.remove(i)
                     change = True
                     rand = 1
-                else:#wish i could steal *this* from admin.py
+                else:  # wish i could steal *this* from admin.py
                     if quantity >= 10:
-                        rand = random.randint(1, quantity*.9)
+                        rand = random.randint(1, quantity * .9)
                         i["quantity"] -= rand
                         change = True
                     else:
@@ -608,10 +628,13 @@ class Crime(commands.Cog):
         if not change:
             return await ctx.send(f"**{user.name}** doesn't have a **{emoji} {name}**, silly.")
 
-        embed = discord.Embed(title=":fire: You burned:", description=f"{rand} of **{user.name}'s**\n**{emoji} {name}**")
+        embed = discord.Embed(title=":fire: You burned:",
+                              description=f"{rand} of **{user.name}'s**\n**{emoji} {name}**")
         await ctx.send(embed=embed)
-        await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory}) #updating the target inv and user inv
-        return await self.bot.inventories.upsert({"_id": user.id, "inventory": targetInventory}) #oml you could burn somebody's dragon
+        await self.bot.inventories.upsert(
+            {"_id": ctx.author.id, "inventory": inventory})  # updating the target inv and user inv
+        return await self.bot.inventories.upsert(
+            {"_id": user.id, "inventory": targetInventory})  # oml you could burn somebody's dragon
         try:
             if quantity > 1:
                 await user.send(f"**{ctx.author}** burned **{quantity}** x {emoji} **{name}** :pensive:.")
@@ -626,6 +649,7 @@ class Crime(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             ctx.command.reset_cooldown(ctx)
             return await ctx.send(f"Usage: `{self.bot.prefix}burn (user) (item)`")
+
 
 def setup(bot):
     bot.add_cog(Crime(bot))

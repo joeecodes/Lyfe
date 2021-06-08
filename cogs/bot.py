@@ -1,12 +1,14 @@
-import discord, platform, logging, random, os, asyncio, time
-from discord.ext import commands
 import platform
 from pathlib import Path
+
+import discord
+import os
+import time
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
-from tabulate import tabulate
-from datetime import datetime
+
 
 class Bot(commands.Cog):
 
@@ -29,7 +31,7 @@ class Bot(commands.Cog):
         count = 0
         icount = 0
 
-        for file in os.listdir(cwd+"/cogs"):
+        for file in os.listdir(cwd + "/cogs"):
             if file.endswith(".py") and not file.startswith("_"):
                 done = False
                 try:
@@ -52,10 +54,13 @@ class Bot(commands.Cog):
                     name = f"`✘ {name[:1].upper()}{name[1:]}`"
                     items.append(name)
 
-        embed = discord.Embed(title="Diagnosis", description=f"**Extensions:**\n{message.join(modules)}\n**Errors since startup:** `{self.bot.important_errors}/{self.bot.errors}`", color=discord.Color.blue())
+        embed = discord.Embed(title="Diagnosis",
+                              description=f"**Extensions:**\n{message.join(modules)}\n**Errors since startup:** `{self.bot.important_errors}/{self.bot.errors}`",
+                              color=discord.Color.blue())
         await ctx.send(embed=embed)
+
     @commands.command(aliases=['stats'])
-    async def info(self,ctx):
+    async def info(self, ctx):
         m, s = divmod(time.time() - self.bot.upsince, 60)
         h, m = divmod(m, 60)
         if int(h) == 0 and int(m) == 0:
@@ -76,6 +81,7 @@ class Bot(commands.Cog):
         )
         embed.set_footer(text="Built by NotStealthy#0001, Spook#4177 and hypews#0001")
         return await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Bot(bot))

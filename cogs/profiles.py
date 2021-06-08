@@ -1,12 +1,11 @@
-import discord, platform, logging, random, os, time, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+from discord.ext import commands
 
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
-from tabulate import tabulate
 
 
 def is_dev():

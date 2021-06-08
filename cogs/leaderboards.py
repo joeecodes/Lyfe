@@ -1,12 +1,12 @@
-import discord, platform, logging, random, os, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
 from tabulate import tabulate
-from datetime import datetime
+
 
 class Leaderboards(commands.Cog):
 
@@ -77,16 +77,17 @@ class Leaderboards(commands.Cog):
                 break
 
         output = ("```" + tabulate(entries, tablefmt="simple", headers=["#", "Player", "Balance"]) + "```")
-        embed = discord.Embed(title="<:coin:733930163817152565> Highest Total Balances:", description=output, color=discord.Color.gold())
+        embed = discord.Embed(title="<:coin:733930163817152565> Highest Total Balances:", description=output,
+                              color=discord.Color.gold())
         await ctx.send(embed=embed)
 
     @baltop.error
     async def baltop_error(self, ctx, error):
         self.bot.errors += 1
         self.bot.important_errors += 1
-        embed = discord.Embed(title=":x: Leaderboard Error", description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/zAZ3vKJ).")
+        embed = discord.Embed(title=":x: Leaderboard Error",
+                              description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/zAZ3vKJ).")
         await ctx.send(embed=embed)
-
 
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -125,8 +126,10 @@ class Leaderboards(commands.Cog):
     async def frogtop_error(self, ctx, error):
         self.bot.errors += 1
         self.bot.important_errors += 1
-        embed = discord.Emebd(title=":x: Leaderboard Error", description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/S9jPGSJt8D).")
+        embed = discord.Emebd(title=":x: Leaderboard Error",
+                              description="There was an error fetching infortmation. If you wish, you may [report this](https://discord.gg/S9jPGSJt8D).")
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Leaderboards(bot))

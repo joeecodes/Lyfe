@@ -1,12 +1,13 @@
-import discord, platform, logging, random, os, asyncio, math
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
-from tabulate import tabulate
 from datetime import datetime, timedelta
+
 
 class Inventory(commands.Cog):
 
@@ -16,7 +17,6 @@ class Inventory(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("+ Inventory Cog loaded")
-
 
     @commands.command(aliases=['inv', 'inventorysee', 'invsee'])
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -51,7 +51,8 @@ class Inventory(commands.Cog):
         if data is None:
             if user == ctx.author:
                 data = []
-                await ctx.send("It seems this is your first time checking your inventory, I'll give you a shopping cart and $`100` to get started!")
+                await ctx.send(
+                    "It seems this is your first time checking your inventory, I'll give you a shopping cart and $`100` to get started!")
                 item = items["shoppingcart"]
                 del item["emoji"], item["value"], item["description"], item["rarity"]
                 item["locked"] = False
@@ -82,15 +83,15 @@ class Inventory(commands.Cog):
             if has_allergy == 1:
                 for i in inventory:
                     if i["name"] == peanut:
-                            if bal > 120:
-                                bal -= money
-                                nutembed = discord.Embed(
-                                    title=":peanuts: Peanut Allergy",
-                                    description=f"Oh no! You had an allergic reaction to some peanuts in your inventory.\nYou had to pay $`{money}` for treatment.",
-                                    color=discord.Color.red()
-                                )
-                                await ctx.send(embed=nutembed)
-                                await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
+                        if bal > 120:
+                            bal -= money
+                            nutembed = discord.Embed(
+                                title=":peanuts: Peanut Allergy",
+                                description=f"Oh no! You had an allergic reaction to some peanuts in your inventory.\nYou had to pay $`{money}` for treatment.",
+                                color=discord.Color.red()
+                            )
+                            await ctx.send(embed=nutembed)
+                            await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": bal})
 
         pagelimit = 5 * round(len(inventory) / 5)
         if pagelimit < len(inventory): pagelimit += 5
@@ -107,7 +108,8 @@ class Inventory(commands.Cog):
             if page == 1:
                 emptyembed = discord.Embed(
                     title=":wastebasket: Empty Inventory",
-                    description="**{}'s** inventory is empty!\n**Balance:** $`{:,}`\n**Bank:** $`{:,}`/`{:,}`".format(user.name, bal, bankbal, banklimit),
+                    description="**{}'s** inventory is empty!\n**Balance:** $`{:,}`\n**Bank:** $`{:,}`/`{:,}`".format(
+                        user.name, bal, bankbal, banklimit),
                     color=discord.Color.red()
                 )
                 return await ctx.send(embed=emptyembed)
@@ -118,7 +120,10 @@ class Inventory(commands.Cog):
         else:
             color = discord.Color.red()
 
-        embed = discord.Embed(title=f":desktop: **{user.name}'s Inventory**", description="{}**Balance:** $`{:,}`\n**Bank:** $`{:,}`/`{:,}`".format(title, bal, bankbal, banklimit), color=color)
+        embed = discord.Embed(title=f":desktop: **{user.name}'s Inventory**",
+                              description="{}**Balance:** $`{:,}`\n**Bank:** $`{:,}`/`{:,}`".format(title, bal, bankbal,
+                                                                                                    banklimit),
+                              color=color)
 
         count = 0
         for i in inventory:
@@ -127,7 +132,9 @@ class Inventory(commands.Cog):
                 name, locked, quantity = i["name"], i["locked"], i["quantity"]
                 item = items[name.replace(" ", "").lower()]
                 desc, emoji, value = item["description"], item["emoji"], item["value"]
-                embed.add_field(name=f"{emoji} {name}", value="**Description:** `{}`\n**Locked:** `{}`\n**Value:** $`{:,}`\n**Quantity:** `{:,}`".format(desc, locked, value, quantity), inline=False)
+                embed.add_field(name=f"{emoji} {name}",
+                                value="**Description:** `{}`\n**Locked:** `{}`\n**Value:** $`{:,}`\n**Quantity:** `{:,}`".format(
+                                    desc, locked, value, quantity), inline=False)
 
             if count == page * 5:
                 break
@@ -140,7 +147,6 @@ class Inventory(commands.Cog):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
             ctx.command.reset_cooldown(ctx)
-            
 
         cooldowns = await self.bot.cooldowns.find(ctx.author.id)
         try:
@@ -154,9 +160,11 @@ class Inventory(commands.Cog):
                 if int(h) == 0 and int(m) == 0:
                     await ctx.send(f':mailbox_with_no_mail: You must wait **{int(s)} seconds** to claim again.')
                 elif int(h) == 0 and int(m) != 0:
-                    await ctx.send(f':mailbox_with_no_mail: You must wait **{int(m)} minutes and {int(s)} seconds** to claim again.')
+                    await ctx.send(
+                        f':mailbox_with_no_mail: You must wait **{int(m)} minutes and {int(s)} seconds** to claim again.')
                 else:
-                    await ctx.send(f':mailbox_with_no_mail: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to claim again.')
+                    await ctx.send(
+                        f':mailbox_with_no_mail: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to claim again.')
 
                 return
 
@@ -205,15 +213,17 @@ class Inventory(commands.Cog):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
             ctx.command.reset_cooldown(ctx)
-            return await ctx.send(f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
 
         streak = 1
         try:
             cooldowns = await self.bot.cooldowns.find(ctx.author.id)
             if cooldowns is None or cooldowns["daily"] < datetime.now() - timedelta(days=1):
                 await self.bot.cooldowns.upsert({"_id": ctx.author.id, "daily": datetime.now()})
-                if cooldowns != None: # If it's not the first time
-                    if not cooldowns["daily"] < datetime.now() - timedelta(days=2): # If it hasn't been more than 2 days
+                if cooldowns != None:  # If it's not the first time
+                    if not cooldowns["daily"] < datetime.now() - timedelta(
+                            days=2):  # If it hasn't been more than 2 days
                         try:
                             streak = cooldowns["dailystreak"]
                             streak += 1
@@ -232,9 +242,11 @@ class Inventory(commands.Cog):
                 if int(h) == 0 and int(m) == 0:
                     await ctx.send(f':mailbox_with_no_mail: You must wait **{int(s)} seconds** to claim again.')
                 elif int(h) == 0 and int(m) != 0:
-                    await ctx.send(f':mailbox_with_no_mail: You must wait **{int(m)} minutes and {int(s)} seconds** to claim again.')
+                    await ctx.send(
+                        f':mailbox_with_no_mail: You must wait **{int(m)} minutes and {int(s)} seconds** to claim again.')
                 else:
-                    await ctx.send(f':mailbox_with_no_mail: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to claim again.')
+                    await ctx.send(
+                        f':mailbox_with_no_mail: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to claim again.')
                 return
         except (KeyError, IndexError):
             await self.bot.cooldowns.upsert({"_id": ctx.author.id, "daily": datetime.now()})
@@ -243,7 +255,7 @@ class Inventory(commands.Cog):
         items = await self.bot.items.find("items")
         items = items["items"]
 
-        #min = int(170 / math.pi * math.atan(1/15 * (streak - 1)))
+        # min = int(170 / math.pi * math.atan(1/15 * (streak - 1)))
         a = 1.356248795
         try:
             min = int(85 / a * (a - 1 / (a ** (streak / 7 - 8 / 7))))
@@ -287,7 +299,11 @@ class Inventory(commands.Cog):
         if streak is None or streak == 1:
             await ctx.send(":mailbox_with_mail: You got **{} {}** and $`{:,}`".format(emoji, name, amount))
         else:
-            await ctx.send(":mailbox_with_mail: You got **{} {}** and $`{:,}` - You're on a streak of :fire: **{}**!".format(emoji, name, amount, streak))
+            await ctx.send(
+                ":mailbox_with_mail: You got **{} {}** and $`{:,}` - You're on a streak of :fire: **{}**!".format(emoji,
+                                                                                                                  name,
+                                                                                                                  amount,
+                                                                                                                  streak))
         await self.bot.inventories.upsert({"_id": ctx.author.id, "inventory": inventory})
         await self.bot.inventories.upsert({"_id": ctx.author.id, "balance": balance})
 
@@ -295,7 +311,8 @@ class Inventory(commands.Cog):
     async def lock(self, ctx, item):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
 
         items = await self.bot.items.find("items")
         items = items["items"]
@@ -318,7 +335,7 @@ class Inventory(commands.Cog):
         name, emoji = items[item.replace(" ", "").lower()]["name"], items[item.replace(" ", "").lower()]["emoji"]
         found = False
         for i in inventory:
-            if i["name"].replace(" ", "").lower() == item: # If found, check if locked.
+            if i["name"].replace(" ", "").lower() == item:  # If found, check if locked.
                 found = True
                 if i["locked"]:
                     return await ctx.send(f"{emoji} {name} already locked.")
@@ -345,12 +362,12 @@ class Inventory(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}lock (item)`")
 
-
     @commands.command()
     async def unlock(self, ctx, item):
         data = await self.bot.inventories.find(ctx.author.id)
         if data is None:
-            return await ctx.send(f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
+            return await ctx.send(
+                f"You haven't initialized your inventory yet. Do `{self.bot.prefix}inv` to get started!")
 
         items = await self.bot.items.find("items")
         items = items["items"]
@@ -371,7 +388,7 @@ class Inventory(commands.Cog):
         name, emoji = items[item.replace(" ", "").lower()]["name"], items[item.replace(" ", "").lower()]["emoji"]
         found = False
         for i in inventory:
-            if i["name"].replace(" ", "").lower() == item: # If found, check if locked.
+            if i["name"].replace(" ", "").lower() == item:  # If found, check if locked.
                 found = True
                 if not i["locked"]:
                     return await ctx.send(f"{emoji} {name} is not locked.")
@@ -397,6 +414,7 @@ class Inventory(commands.Cog):
     async def unlock_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}unlock (item)`")
+
 
 def setup(bot):
     bot.add_cog(Inventory(bot))

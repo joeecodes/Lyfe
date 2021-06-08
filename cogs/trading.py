@@ -1,12 +1,13 @@
-import discord, platform, logging, random, os, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import asyncio
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
-from tabulate import tabulate
-from datetime import datetime
+
 
 class Trading(commands.Cog):
 
@@ -85,17 +86,19 @@ class Trading(commands.Cog):
         dict = {}
         offered = item1["name"].replace(" ", "").lower()
         desired = item2["name"].replace(" ", "").lower()
-        dict["offerer"], dict["offereditem"], dict["desireditem"], dict["receiver"], dict["completed"] = ctx.author.id, offered, desired, user.id, False
+        dict["offerer"], dict["offereditem"], dict["desireditem"], dict["receiver"], dict[
+            "completed"] = ctx.author.id, offered, desired, user.id, False
         await self.bot.trades.upsert({"_id": tradeid, "trade": dict})
 
         embed = discord.Embed(
-                    title=f"Trade Request for **{user.name}** from **{ctx.author.name}**",
-                    description=f"TradeID: `{tradeid}`\n\n**Offering: {emoji1} {name1}**\n**For: {emoji2} {name2}**\n\nTo accept: `{self.bot.prefix}taccept {tradeid}`\nExpires in 30 minutes",
-                    color=discord.Color.gold()
-                )
+            title=f"Trade Request for **{user.name}** from **{ctx.author.name}**",
+            description=f"TradeID: `{tradeid}`\n\n**Offering: {emoji1} {name1}**\n**For: {emoji2} {name2}**\n\nTo accept: `{self.bot.prefix}taccept {tradeid}`\nExpires in 30 minutes",
+            color=discord.Color.gold()
+        )
         await ctx.send(embed=embed)
         try:
-            await user.send(f"You have a trade request! Do `{self.bot.prefix}taccept {tradeid}` in dms or in any channel I have acces to.")
+            await user.send(
+                f"You have a trade request! Do `{self.bot.prefix}taccept {tradeid}` in dms or in any channel I have acces to.")
             await user.send(embed=embed)
         except Forbidden:
             await ctx.send("Messaging user failed.")
@@ -108,7 +111,6 @@ class Trading(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}trade (user) (owned item) (desired item)`")
 
-
     @commands.command()
     async def taccept(self, ctx, tradeid):
         trade = await self.bot.trades.find(int(tradeid))
@@ -118,7 +120,8 @@ class Trading(commands.Cog):
 
         trade = trade["trade"]
         if trade["completed"]:
-            return await ctx.send("Trade has already been completed, it was cancelled by the offerer or it has expired.")
+            return await ctx.send(
+                "Trade has already been completed, it was cancelled by the offerer or it has expired.")
 
         items = await self.bot.items.find("items")
         items = items["items"]
@@ -237,7 +240,6 @@ class Trading(commands.Cog):
         elif isinstance(error, commands.CommandInvokeError):
             return await ctx.send("That is not a valid TradeID.")
 
-
     @commands.command()
     async def tcancel(self, ctx, tradeid):
         trade = await self.bot.trades.find(int(tradeid))
@@ -251,7 +253,8 @@ class Trading(commands.Cog):
             return await ctx.send("You did not offer this trade.")
 
         if trade["completed"]:
-            return await ctx.send("Trade has already been completed, it was cancelled by the offerer or it has expired.")
+            return await ctx.send(
+                "Trade has already been completed, it was cancelled by the offerer or it has expired.")
 
         trade["completed"] = True
         await self.bot.trades.upsert({"_id": int(tradeid), "trade": trade})
@@ -264,6 +267,7 @@ class Trading(commands.Cog):
             return await ctx.send(f"Usage: `{self.bot.prefix}tradecancel (tradeid)`")
         elif isinstance(error, commands.CommandInvokeError):
             return await ctx.send("That is not a valid TradeID.")
+
 
 def setup(bot):
     bot.add_cog(Trading(bot))
