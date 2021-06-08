@@ -67,7 +67,7 @@ async def on_message(message):
         if data is None:
             welcomeback = discord.Embed(
                 title="Lyfe is returning!",
-                description=f"After quite a long time of inactivity, Lyfe is returning.\nPlease join our support server by doing `{bot.prefix}invite` for more info.\n**Please note, some commands may be buggy or certain features may not be available at the current time!",
+                description=f"After quite a long time of inactivity, Lyfe is returning.\nPlease join our support server by doing `{bot.prefix}invite` for more info.\n**Please note, some commands may be buggy or certain features may not be available at the current time!**",
                 color=discord.Color.green()
             )
             welcomeback.set_thumbnail(url=bot.user.avatar_url)
