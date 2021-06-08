@@ -1,7 +1,7 @@
-import discord, random, datetime, asyncio
+import discord
 from discord.ext import commands
-import utils.json
 from discord.utils import find
+
 
 class Events(commands.Cog):
 
@@ -15,10 +15,13 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         channel = self.bot.get_channel(851519954460213259)
-        print(f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
-        await channel.send(f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
-        await self.bot.change_presence(activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
-        general = find(lambda x: x.name == 'general',  guild.text_channels)
+        print(
+            f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await channel.send(
+            f"JOINED {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await self.bot.change_presence(
+            activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
+        general = find(lambda x: x.name == 'general', guild.text_channels)
         if general and general.permissions_for(guild.me).send_messages:
             welcomebed = discord.Embed(
                 title="Thank you for inviting me!",
@@ -31,15 +34,19 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         channel = self.bot.get_channel(851519954460213259)
-        print(f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
-        await channel.send(f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
-        await self.bot.change_presence(activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
+        print(
+            f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await channel.send(
+            f"LEFT {guild.name} - Owner: {guild.owner} - Members: {len(guild.members)} - Now in {len(self.bot.guilds)} guilds.")
+        await self.bot.change_presence(
+            activity=discord.Game(name=f"{self.bot.prefix}help in {len(self.bot.guilds)} servers"))
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         self.bot.errors += 1
         # Ignored errors
-        ignored = (commands.CommandNotFound, commands.MissingRequiredArgument, commands.BadArgument)#, commands.UserInputError
+        ignored = (
+        commands.CommandNotFound, commands.MissingRequiredArgument, commands.BadArgument)  # , commands.UserInputError
         if isinstance(error, ignored):
             return
 
@@ -52,9 +59,11 @@ class Events(commands.Cog):
             if int(h) == 0 and int(m) == 0:
                 await ctx.send(f':stopwatch: You must wait **{int(s)} seconds** to use this command again.')
             elif int(h) == 0 and int(m) != 0:
-                await ctx.send(f':stopwatch: You must wait **{int(m)} minutes and {int(s)} seconds** to use this command again.')
+                await ctx.send(
+                    f':stopwatch: You must wait **{int(m)} minutes and {int(s)} seconds** to use this command again.')
             else:
-                await ctx.send(f':stopwatch: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to use this command again.')
+                await ctx.send(
+                    f':stopwatch: You must wait **{int(h)} hours, {int(m)} minutes and {int(s)} seconds** to use this command again.')
             return
 
         elif isinstance(error, commands.CheckFailure):
@@ -63,29 +72,39 @@ class Events(commands.Cog):
         elif isinstance(error, commands.CommandInvokeError):
             if str(error.original) == "403 Forbidden (error code: 50013): Missing Permissions":
                 try:
-                    embed = discord.Embed(title=":x: **Missing Permissions**", description="If you believe this was an error, please [report it](https://discord.gg/zAZ3vKJ).", color=discord.Color.red())
+                    embed = discord.Embed(title=":x: **Missing Permissions**",
+                                          description="If you believe this was an error, please [report it](https://discord.gg/zAZ3vKJ).",
+                                          color=discord.Color.red())
                     await ctx.send(embed=embed)
-                    print(f"\n===============================================\nMISSING PERMISSIONS\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\n")
+                    print(
+                        f"\n===============================================\nMISSING PERMISSIONS\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\n")
                 except Exception:
                     pass
             else:
                 self.bot.important_errors += 1
-                embed = discord.Embed(title=":x:  **I found an error!**", description="If you wish, you may [report it](https://discord.gg/zAZ3vKJ).", color=discord.Color.red())
+                embed = discord.Embed(title=":x:  **I found an error!**",
+                                      description="If you wish, you may [report it](https://discord.gg/zAZ3vKJ).",
+                                      color=discord.Color.red())
                 await ctx.send(embed=embed)
-                print(f"\n===============================================\nCOMMAND INVOKE ERROR\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\nRAISING ERROR:")
+                print(
+                    f"\n===============================================\nCOMMAND INVOKE ERROR\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\nRAISING ERROR:")
                 raise error
             return
 
         elif isinstance(error, commands.UnexpectedQuoteError) or isinstance(error, commands.ExpectedClosingQuoteError):
-            embed = discord.Embed(title=":x: **Unexpected Quote**", description="There was an unexpected quote in your command.\nIf you think this is a mistake, you may [report it](https://discord.gg/zAZ3vKJ).", color=discord.Color.red())
+            embed = discord.Embed(title=":x: **Unexpected Quote**",
+                                  description="There was an unexpected quote in your command.\nIf you think this is a mistake, you may [report it](https://discord.gg/zAZ3vKJ).",
+                                  color=discord.Color.red())
             await ctx.send(embed=embed)
-            print(f"\n===============================================\nUNEXPECTED QUOTE\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\n")
+            print(
+                f"\n===============================================\nUNEXPECTED QUOTE\nReplied in ctx\nError: {error}\n{ctx.author}: {ctx.message.content}\n===============================================\n")
             return
 
         self.bot.important_errors += 1
         print("\n----------\n")
         raise error
         print("\n----------\n")
+
 
 def setup(bot):
     bot.add_cog(Events(bot))

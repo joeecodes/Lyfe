@@ -1,12 +1,13 @@
-import discord, platform, logging, random, os, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+import random
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
-import utils.json
 from tabulate import tabulate
-from datetime import datetime
+
 
 class Research(commands.Cog):
 
@@ -28,7 +29,8 @@ class Research(commands.Cog):
             return await ctx.send(embed=embed)
         item = items[item]
 
-        name, desc, emoji, value, rarity = item["name"], item["description"], item["emoji"], item["value"], item["rarity"]
+        name, desc, emoji, value, rarity = item["name"], item["description"], item["emoji"], item["value"], item[
+            "rarity"]
         embed = discord.Embed(
             title=f"{emoji} **{name}**",
             description="**Description:** `{}`\n**Rarity:** `{}`\n**Value:** $`{:,}`".format(desc, rarity, value),
@@ -40,7 +42,6 @@ class Research(commands.Cog):
     async def iteminfo_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Usage: `{self.bot.prefix}iteminfo (item)`")
-
 
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -54,7 +55,8 @@ class Research(commands.Cog):
         items = items["items"]
         item = item.replace(" ", "").lower()
         if item not in items:
-            return await ctx.send("That item does not exist.\n**Tip:** Items in commands generally don't contain spaces!")
+            return await ctx.send(
+                "That item does not exist.\n**Tip:** Items in commands generally don't contain spaces!")
         item = items[item]
         name, emoji = item["name"], item["emoji"]
 
@@ -97,6 +99,7 @@ class Research(commands.Cog):
     async def find_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}find (item)`")
+
 
 def setup(bot):
     bot.add_cog(Research(bot))

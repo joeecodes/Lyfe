@@ -1,17 +1,22 @@
-import discord, json, platform, logging, os, time, motor.motor_asyncio
-from discord.ext import commands
 from pathlib import Path
 
-import utils.json
+import discord
+import json
+import motor.motor_asyncio
+import os
+import time
+from discord.ext import commands
+
 from utils.mongo import Document
 
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 
-secret_file = json.load(open(cwd+"/bot_config/secrets.json"))
+secret_file = json.load(open(cwd + "/bot_config/secrets.json"))
 prefix = secret_file["prefix"]
 
-bot = commands.Bot(command_prefix=prefix, case_insensitive=True, owner_id=462296411141177364, intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=prefix, case_insensitive=True, owner_id=462296411141177364,
+                   intents=discord.Intents.all())
 bot.remove_command("help")
 
 bot.config_token = secret_file["token"]
@@ -26,6 +31,7 @@ bot.lockdown = False
 bot.errors = 0
 bot.important_errors = 0
 
+
 @bot.event
 async def on_ready():
     print(f"-----\n{bot.user.name} Online\n-----\nPrefix: {bot.prefix}\n-----")
@@ -33,7 +39,8 @@ async def on_ready():
     if status == "online":
         await bot.change_presence(activity=discord.Game(name=f"{bot.prefix}help in {len(bot.guilds)} servers"))
     elif status == "idle":
-        await bot.change_presence(activity=discord.Game(name=f"{bot.prefix}help in {len(bot.guilds)} servers"), status=discord.Status.idle)
+        await bot.change_presence(activity=discord.Game(name=f"{bot.prefix}help in {len(bot.guilds)} servers"),
+                                  status=discord.Status.idle)
     elif status == "streaming":
         await bot.change_presence(activity=discord.Streaming(name=f"{bot.prefix}help", url="https://twitch.tv/discord"))
 
@@ -53,6 +60,7 @@ async def on_ready():
     bot.welcomeback = Document(bot.db, "welcomemessage")
     bot.command_usage = Document(bot.db, "command_usage")
     print("Initialized database\n-----")
+
 
 @bot.event
 async def on_message(message):
@@ -77,11 +85,13 @@ async def on_message(message):
             pass
 
     # Lockdown system
-    if bot.lockdown and message.author.id not in json.load(open(cwd+"/bot_config/devs.json")):
+    if bot.lockdown and message.author.id not in json.load(open(cwd + "/bot_config/devs.json")):
         ctx = await bot.get_context(message)
         if ctx.valid:
             if message.content.lower().find("invite") != -1:
-                embed = discord.Embed(title=":herb: Lyfé Invite Links", description=":mailbox_with_mail: [Invite me to other servers](https://discord.com/api/oauth2/authorize?client_id=730874220078170122&permissions=519232&scope=bot)\n<:discord:851488059975663706> [Lyfé Server](https://discord.gg/q5AYJMjqRa)", color=discord.Color.purple())
+                embed = discord.Embed(title=":herb: Lyfé Invite Links",
+                                      description=":mailbox_with_mail: [Invite me to other servers](https://discord.com/api/oauth2/authorize?client_id=730874220078170122&permissions=519232&scope=bot)\n<:discord:851488059975663706> [Lyfé Server](https://discord.gg/q5AYJMjqRa)",
+                                      color=discord.Color.purple())
                 return await ctx.send(embed=embed)
             else:
                 lockdownembed = discord.Embed(
@@ -110,8 +120,9 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+
 if __name__ == '__main__':
-    for file in os.listdir(cwd+"/cogs"):
+    for file in os.listdir(cwd + "/cogs"):
         if file.endswith(".py") and not file.startswith("_"):
             bot.load_extension(f"cogs.{file[:-3]}")
 

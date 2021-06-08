@@ -1,18 +1,23 @@
-import discord, platform, logging, random, os, time, asyncio
-from discord.ext import commands
-import platform
 from pathlib import Path
+
+import discord
+import os
+import time
+from discord.ext import commands
+
 cwd = Path(__file__).parents[1]
 cwd = str(cwd)
 import utils.json
-from tabulate import tabulate
+
 
 def is_dev():
     def predictate(ctx):
         devs = utils.json.read_json("devs")
         if ctx.author.id in devs:
             return ctx.author.id
+
     return commands.check(predictate)
+
 
 class Admin(commands.Cog):
 
@@ -49,8 +54,10 @@ class Admin(commands.Cog):
             return
 
         await ctx.send("Please confirm.")
+
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.author
+
         message = await self.bot.wait_for('message', check=check)
         if message.content.lower() == "confirm" or message.content.lower() == "yes":
             pass
@@ -97,15 +104,17 @@ class Admin(commands.Cog):
             item = items[item]
             count += 1
             if count > page * 5 - 5:
-                name, desc, emoji, value, rarity = item["name"], item["description"], item["emoji"], item["value"], item["rarity"]
-                embed.add_field(name=f"{emoji} {name}", value=f"**Description:** `{desc}`\n**Rarity:** `{rarity}`\n**Value:** $`{value}`", inline=False)
+                name, desc, emoji, value, rarity = item["name"], item["description"], item["emoji"], item["value"], \
+                                                   item["rarity"]
+                embed.add_field(name=f"{emoji} {name}",
+                                value=f"**Description:** `{desc}`\n**Rarity:** `{rarity}`\n**Value:** $`{value}`",
+                                inline=False)
 
             if count == page * 5:
                 break
 
         embed.set_footer(text=f"Item List | Page: {page}/{pagelimit}")
         await ctx.send(embed=embed)
-
 
     @commands.command(aliases=['si', 'gi'])
     @is_dev()
@@ -152,7 +161,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}spawnitem (item) (user)`")
 
-
     @commands.command(aliases=['ri'])
     @is_dev()
     async def removeitem(self, ctx, item, user):
@@ -198,7 +206,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}removeitem (item) (user)`")
 
-
     @commands.command(aliases=['sb'])
     @is_dev()
     async def setbalance(self, ctx, user, amount="n"):
@@ -243,8 +250,10 @@ class Admin(commands.Cog):
             user = ctx.message.mentions[0]
 
         await ctx.send("Please confirm.")
+
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.author
+
         message = await self.bot.wait_for('message', check=check)
         if message.content.lower() == "confirm" or message.content.lower() == "yes":
             pass
@@ -272,7 +281,6 @@ class Admin(commands.Cog):
     async def resetdata_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}reset (user)`")
-
 
     @commands.command()
     @is_dev()
@@ -306,7 +314,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}blacklist (user)`")
 
-
     @commands.command()
     @is_dev()
     async def unblacklist(self, ctx, member):
@@ -331,12 +338,10 @@ class Admin(commands.Cog):
         await ctx.send(f"Unblacklisted **{member.name}**.")
         print(f"{ctx.author} unblacklisted {member}")
 
-
     @unblacklist.error
     async def unblacklist_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}unblacklist (user)`")
-
 
     @commands.command()
     @is_dev()
@@ -366,7 +371,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}whitelist (user)`")
 
-
     @commands.command()
     @is_dev()
     async def unwhitelist(self, ctx, member):
@@ -395,7 +399,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}whitelist (user)`")
 
-
     @commands.command()
     @is_dev()
     async def load(self, ctx, module):
@@ -414,7 +417,6 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}load (module)`")
 
-
     @commands.command()
     @is_dev()
     async def reload(self, ctx, module):
@@ -422,7 +424,7 @@ class Admin(commands.Cog):
             return
         if module == "all":
             start = time.time()
-            for file in os.listdir(cwd+"/cogs"):
+            for file in os.listdir(cwd + "/cogs"):
                 if file.endswith(".py") and not file.startswith("_"):
                     self.bot.reload_extension(f"cogs.{file[:-3]}")
                     name = file[:-3].lower()
@@ -440,7 +442,6 @@ class Admin(commands.Cog):
     async def reload_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}reload (module/all)`")
-
 
     @commands.command()
     @is_dev()
@@ -462,20 +463,20 @@ class Admin(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Usage: `{self.bot.prefix}unload (module)`")
 
-
     @commands.command()
     @is_dev()
     async def maintenance(self, ctx):
         self.bot.maintenancemode = not self.bot.maintenancemode
         await ctx.send(f"Maintenance-Mode set to **{self.bot.maintenancemode}**.")
 
-
     @commands.command()
     @is_dev()
     async def addbeta(self, ctx, user):
         await ctx.send("Please confirm.")
+
         def check(m):
             return m.channel == ctx.channel and m.author == ctx.author
+
         message = await self.bot.wait_for('message', check=check)
         if message.content.lower() == "confirm" or message.content.lower() == "yes":
             pass
@@ -502,6 +503,7 @@ class Admin(commands.Cog):
             return await ctx.send("Inv not init.")
         await self.bot.inventories.upsert({"_id": user.id, "beta": True})
         await ctx.send(f"**{user.name}** given beta.")
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
