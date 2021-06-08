@@ -8,6 +8,13 @@ import utils.json
 from tabulate import tabulate
 from datetime import datetime, timedelta
 
+def is_dev():
+    def predictate(ctx):
+        devs = utils.json.read_json("devs")
+        if ctx.author.id in devs:
+            return ctx.author.id
+    return commands.check(predictate)
+
 class Misc(commands.Cog):
 
     def __init__(self, bot):
@@ -191,6 +198,25 @@ class Misc(commands.Cog):
         )
         welcomebed.set_thumbnail(url=self.bot.user.avatar_url)
         return await ctx.send(embed=welcomebed)
+
+    @commands.command()
+    @is_dev()
+    async def hello(self, ctx, user:discord.Member=None):
+        if len(ctx.message.mentions) == 0:
+            try:
+                user = self.bot.get_user(int(user))
+                if user is None:
+                    ctx.command.reset_cooldown(ctx)
+                    return await ctx.send("I couldn't find that user.\n**Tip:** Mention them or use their id.")
+            except ValueError:
+                ctx.command.reset_cooldown(ctx)
+                return await ctx.send("I couldn't find that user.\n**Tip:** Mention them or use their id.")
+        else:
+            user = ctx.message.mentions[0]
+        if user is None:
+            return await ctx.send(f"Hello, {ctx.author.mention}")
+        else:
+            return await ctx.send(f"{user.mention}, {ctx.author.mention} says hello!")
 
 
 
